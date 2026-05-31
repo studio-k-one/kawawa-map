@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>川和町 指定避難所</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Hiragino Sans','Meiryo',sans-serif; background:#f0f4f8; min-height:100vh; }
+
+    header {
+      background:#e53935; color:white;
+      padding:14px 16px; text-align:center;
+    }
+    header h1 { font-size:17px; font-weight:bold; }
+    header p  { font-size:12px; opacity:.9; margin-top:3px; }
+
+    #status {
+      background:#fff8e1; color:#e65100;
+      font-size:12px; padding:6px 14px; text-align:center;
+      border-bottom:1px solid #ffe082;
+    }
+
+    #map { width:100%; height:240px; }
+
+    .cards { padding:12px; display:flex; flex-direction:column; gap:12px; }
+
+    .card {
+      background:white; border-radius:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,.12);
+      overflow:hidden;
+    }
+    .card-header {
+      background:#1a5c9a; color:white;
+      padding:10px 14px; display:flex; align-items:center; gap:8px;
+    }
+    .card-header .no {
+      background:white; color:#1a5c9a;
+      border-radius:50%; width:26px; height:26px;
+      display:flex; align-items:center; justify-content:center;
+      font-size:12px; font-weight:bold; flex-shrink:0;
+    }
+    .card-header .title { font-size:15px; font-weight:bold; }
+    .card-body { padding:10px 14px; }
+    .card-body .addr { font-size:13px; color:#555; margin-bottom:4px; }
+    .card-body .area { font-size:12px; color:#888; margin-bottom:10px; }
+    .dist-label { font-size:13px; font-weight:bold; color:#e53935; margin-bottom:10px; }
+
+    .btn-wrap { display:flex; gap:8px; }
+
+    .btn-route {
+      flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+      background:#34a853; color:white;
+      border:none; border-radius:8px; padding:11px 8px;
+      font-size:14px; font-weight:bold; cursor:pointer;
+      text-decoration:none;
+    }
+    .btn-route:hover { background:#2e8b47; }
+
+    .btn-map {
+      flex:1; display:flex; align-items:center; justify-content:center; gap:6px;
+      background:#1a5c9a; color:white;
+      border:none; border-radius:8px; padding:11px 8px;
+      font-size:14px; font-weight:bold; cursor:pointer;
+      text-decoration:none;
+    }
+    .btn-map:hover { background:#134a7a; }
+
+    footer {
+      text-align:center; font-size:11px; color:#aaa;
+      padding:16px; margin-top:4px;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🏫 川和町 指定避難所</h1>
+  <p>地域防災拠点（地震・大雨時の避難先）</p>
+</header>
+<div id="status">📍 現在地を取得中...</div>
+<div id="map"></div>
+
+<div class="cards">
+
+  <div class="card">
+    <div class="card-header">
+      <div class="no">21</div>
+      <div class="title">川和小学校</div>
+    </div>
+    <div class="card-body">
+      <div class="addr">📌 横浜市都筑区川和町1463</div>
+      <div class="area">👥 対象区域：川和町</div>
+      <div class="dist-label" id="dist-21">📡 距離を計算中...</div>
+      <div class="btn-wrap">
+        <a id="route-21"
+           href="https://www.google.com/maps/dir/?api=1&destination=35.5299535,139.5474711&travelmode=walking"
+           target="_blank" class="btn-route">
+          🗺 徒歩ルート
+        </a>
+        <a href="https://www.google.com/maps/place/横浜市立川和小学校/@35.5299535,139.5474711,17z"
+           target="_blank" class="btn-map">
+          📍 地図を見る
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <div class="no" style="background:white;color:#1a5c9a;">広</div>
+      <div class="title">神奈川県立川和高校</div>
+    </div>
+    <div class="card-body">
+      <div class="addr">📌 横浜市都筑区川和町2226-1</div>
+      <div class="area">👥 広域避難場所（大規模災害時）</div>
+      <div class="dist-label" id="dist-kawa">📡 距離を計算中...</div>
+      <div class="btn-wrap">
+        <a id="route-kawa"
+           href="https://www.google.com/maps/dir/?api=1&destination=35.537585,139.5525318&travelmode=walking"
+           target="_blank" class="btn-route">
+          🗺 徒歩ルート
+        </a>
+        <a href="https://www.google.com/maps/place/神奈川県立川和高等学校/@35.537585,139.5525318,17z"
+           target="_blank" class="btn-map">
+          📍 地図を見る
+        </a>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<footer>横浜市都筑区 地域防災拠点情報</footer>
+
+<script>
+const SITES = [
+  { id:'21',    lat:35.5299535, lng:139.5474711, name:'川和小学校' },
+  { id:'kawa',  lat:35.537585,  lng:139.5525318, name:'川和高校'   },
+];
+
+// ── Leafletマップ ──
+const map = L.map('map').setView([35.534, 139.550], 14);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>',
+  maxZoom:19
+}).addTo(map);
+
+// 避難所ピン
+const icons = {
+  '21':   L.divIcon({ html:'<div style="background:#1a5c9a;color:white;border:2px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.4)"><span style="transform:rotate(45deg);font-weight:bold;font-size:12px">21</span></div>', className:'', iconSize:[32,32], iconAnchor:[16,32], popupAnchor:[0,-34] }),
+  'kawa': L.divIcon({ html:'<div style="background:#e53935;color:white;border:2px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);width:32px;height:32px;display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.4)"><span style="transform:rotate(45deg);font-weight:bold;font-size:11px">広</span></div>', className:'', iconSize:[32,32], iconAnchor:[16,32], popupAnchor:[0,-34] }),
+};
+
+SITES.forEach(s=>{
+  L.marker([s.lat,s.lng],{icon:icons[s.id]})
+    .addTo(map)
+    .bindPopup(`<b>${s.name}</b>`);
+});
+
+// ── 距離計算 ──
+function calcDist(la1,ln1,la2,ln2){
+  const R=6371,dLa=(la2-la1)*Math.PI/180,dLn=(ln2-ln1)*Math.PI/180;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLn/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function distLabel(km){ return km<1?Math.round(km*1000)+'m':km.toFixed(1)+'km'; }
+
+// ── 現在地取得 ──
+if(navigator.geolocation){
+  navigator.geolocation.getCurrentPosition(pos=>{
+    const lat=pos.coords.latitude, lng=pos.coords.longitude;
+
+    // 現在地マーカー
+    L.circleMarker([lat,lng],{
+      radius:9, fillColor:'#2196F3', fillOpacity:1,
+      color:'white', weight:3
+    }).addTo(map).bindPopup('📍 現在地');
+
+    // マップを現在地＋避難所が全部見えるようにフィット
+    const bounds=[[lat,lng],...SITES.map(s=>[s.lat,s.lng])];
+    map.fitBounds(bounds,{padding:[30,30]});
+
+    document.getElementById('status').textContent='📍 現在地を取得しました';
+
+    // 各避難所の距離・ルートリンク更新
+    SITES.forEach(s=>{
+      const dist=calcDist(lat,lng,s.lat,s.lng);
+      const el=document.getElementById('dist-'+s.id);
+      if(el) el.textContent=`📍 現在地から ${distLabel(dist)}`;
+
+      // ルートリンクを現在地起点に更新
+      const btn=document.getElementById('route-'+s.id);
+      if(btn) btn.href=`https://www.google.com/maps/dir/?api=1&origin=${lat},${lng}&destination=${s.lat},${s.lng}&travelmode=walking`;
+    });
+
+  }, ()=>{
+    document.getElementById('status').textContent='⚠️ 現在地の取得が許可されませんでした';
+    SITES.forEach(s=>{
+      const el=document.getElementById('dist-'+s.id);
+      if(el) el.textContent='現在地未取得（許可してください）';
+    });
+  },{enableHighAccuracy:true,timeout:10000});
+} else {
+  document.getElementById('status').textContent='⚠️ このブラウザは現在地取得に対応していません';
+}
+</script>
+</body>
+</html>

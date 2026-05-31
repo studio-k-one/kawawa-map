@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>都筑区 地域防災拠点マップ（18〜27番）</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Hiragino Sans','Meiryo',sans-serif; display:flex; flex-direction:column; height:100vh; }
+
+    header {
+      background:#1a5c9a; color:white; padding:10px 16px;
+      display:flex; align-items:center; gap:10px; flex-shrink:0;
+    }
+    header h1 { font-size:15px; font-weight:bold; }
+    header p  { font-size:11px; opacity:.85; margin-top:2px; }
+
+    #status {
+      padding:5px 14px; font-size:12px; text-align:center; flex-shrink:0;
+      background:#e8f5e9; color:#2e7d32; border-bottom:1px solid #c8e6c9;
+    }
+
+    #map { flex:1; z-index:0; }
+
+    #panel {
+      height:200px; overflow-y:auto; background:#fff;
+      border-top:2px solid #1a5c9a; flex-shrink:0;
+    }
+    #panel-head {
+      font-size:12px; padding:6px 12px; background:#e3f0fb; color:#1a5c9a;
+      position:sticky; top:0; z-index:1; font-weight:bold;
+    }
+    .row {
+      display:flex; align-items:center; padding:7px 12px;
+      border-bottom:1px solid #f0f0f0; cursor:pointer; gap:8px;
+    }
+    .row:hover { background:#f5f9ff; }
+    .badge {
+      width:26px; height:26px; border-radius:50%;
+      background:#e53935; color:white;
+      display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:bold; flex-shrink:0;
+    }
+    .badge.near { background:#ff6f00; }
+    .info { flex:1; }
+    .info .name { font-size:13px; font-weight:bold; color:#1a1a1a; }
+    .info .addr { font-size:11px; color:#888; }
+    .dist { font-size:12px; font-weight:bold; color:#1a5c9a; flex-shrink:0; min-width:40px; text-align:right; }
+
+    #loc-btn {
+      position:fixed; bottom:215px; right:14px; z-index:999;
+      width:44px; height:44px; border-radius:50%;
+      background:white; border:none;
+      box-shadow:0 2px 8px rgba(0,0,0,.35);
+      cursor:pointer; font-size:20px;
+      display:flex; align-items:center; justify-content:center;
+    }
+    #loc-btn:hover { background:#f0f0f0; }
+
+    /* ポップアップ */
+    .popup-header { background:#e53935; color:white; padding:3px 8px; border-radius:4px; font-size:11px; margin-bottom:5px; display:inline-block; }
+    .popup-title  { font-size:14px; font-weight:bold; color:#1a5c9a; margin-bottom:4px; }
+    .popup-row    { font-size:12px; color:#333; margin:2px 0; line-height:1.5; }
+    .popup-dist   { font-size:12px; font-weight:bold; color:#e53935; margin-top:4px; }
+    .popup-btn    { display:inline-block; margin-top:7px; background:#1a5c9a !important; color:white !important; padding:6px 14px; border-radius:5px; text-decoration:none !important; font-size:13px; font-weight:bold; letter-spacing:0.5px; }
+    .popup-btn:hover { background:#134a7a !important; color:white !important; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>🏫</div>
+  <div>
+    <h1>都筑区 地域防災拠点マップ（No.18〜27）</h1>
+    <p>ピンをクリックで詳細 ／ 📍ボタンで現在地 ／ 下リストは近い順</p>
+  </div>
+</header>
+<div id="status">🔄 マップを読み込み中...</div>
+<div id="map"></div>
+<button id="loc-btn" title="現在地を表示">📍</button>
+<div id="panel">
+  <div id="panel-head">📋 拠点一覧（近い順）</div>
+  <div id="list"></div>
+</div>
+
+<script>
+const SPOTS = [
+  { no:18, name:'都田小学校',       addr:'都筑区東方町46',          area:'東方町・池辺町(一部)・川向町(一部)', tel:'045-941-2049', lat:35.5224367, lng:139.5715614 },
+  { no:19, name:'都田中学校',       addr:'都筑区池辺町4484',         area:'池辺町の一部',                       tel:'045-941-2045', lat:35.523128,  lng:139.5701885 },
+  { no:20, name:'都田西小学校',     addr:'都筑区佐江戸町643',        area:'池辺町(一部)・佐江戸町',             tel:'045-933-7652', lat:35.5215,    lng:139.563517  },
+  { no:21, name:'川和小学校',       addr:'都筑区川和町1463',         area:'川和町',                             tel:'045-931-2272', lat:35.5299535, lng:139.5474711 },
+  { no:22, name:'川和東小学校',     addr:'都筑区富士見が丘21-2',     area:'富士見が丘・二の丸・高山・葛が谷・見花山', tel:'045-942-8130', lat:35.531477,  lng:139.558209  },
+  { no:23, name:'川和中学校',       addr:'都筑区加賀原二丁目1-1',    area:'加賀原一・二丁目・川和台',           tel:'045-941-1361', lat:35.531143,  lng:139.556821  },
+  { no:24, name:'荏田南小学校',     addr:'都筑区荏田南一丁目10-1',   area:'荏田南一〜三丁目・大丸',            tel:'045-942-1040', lat:35.544511,  lng:139.556454  },
+  { no:25, name:'荏田小学校',       addr:'都筑区荏田南町2100',       area:'荏田南町・荏田東町・青葉区荏田町(一部)', tel:'045-911-0149', lat:35.557585,  lng:139.563594  },
+  { no:26, name:'荏田東第一小学校', addr:'都筑区荏田東三丁目14-1',   area:'荏田東三丁目・荏田南四・五丁目',    tel:'045-941-7630', lat:35.5470088, lng:139.5623549 },
+  { no:27, name:'つづきの丘小学校', addr:'都筑区荏田東一丁目6-1',    area:'荏田東一・二・四丁目',              tel:'045-944-3461', lat:35.546195,  lng:139.565775  },
+];
+
+// ── 地図初期化 ──
+const map = L.map('map', { zoomControl:true }).setView([35.535, 139.560], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>',
+  maxZoom:19
+}).addTo(map);
+
+// ── ユーティリティ ──
+function calcDist(la1,ln1,la2,ln2){
+  const R=6371,dLa=(la2-la1)*Math.PI/180,dLn=(ln2-ln1)*Math.PI/180;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLn/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function distLabel(km){ return km<1?Math.round(km*1000)+'m':km.toFixed(1)+'km'; }
+
+// ── ピンアイコン生成 ──
+function makeIcon(no, isNearest){
+  const color = isNearest ? '#ff6f00' : '#e53935';
+  const size  = isNearest ? 36 : 30;
+  const html  = `
+    <div style="
+      width:${size}px; height:${size}px;
+      background:${color};
+      border:2.5px solid white;
+      border-radius:50% 50% 50% 0;
+      transform:rotate(-45deg);
+      display:flex; align-items:center; justify-content:center;
+      box-shadow:0 2px 6px rgba(0,0,0,.4);
+    ">
+      <span style="transform:rotate(45deg); color:white; font-weight:bold; font-size:${isNearest?13:11}px">${no}</span>
+    </div>`;
+  return L.divIcon({ html, className:'', iconSize:[size,size], iconAnchor:[size/2,size], popupAnchor:[0,-(size+4)] });
+}
+
+// ── 現在地 ──
+let userLat=null, userLng=null, userCircle=null, userDot=null;
+let nearestNo=null;
+
+// ── マーカー管理 ──
+let markerMap = {};
+
+function buildPopup(s){
+  const dist = (userLat!==null) ? `<div class="popup-dist">📍 現在地から ${distLabel(calcDist(userLat,userLng,s.lat,s.lng))}</div>` : '';
+  const mapsUrl = `https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=walking`;
+  return `
+    <span class="popup-header">No.${s.no}</span>
+    <div class="popup-title">🏫 ${s.name}</div>
+    <div class="popup-row">📌 ${s.addr}</div>
+    <div class="popup-row">👥 ${s.area}</div>
+    <div class="popup-row">📞 <b>${s.tel}</b></div>
+    ${dist}
+    <a class="popup-btn" href="${mapsUrl}" target="_blank">🗺 ルート案内を開く</a>
+  `;
+}
+
+function addAllMarkers(){
+  // 既存マーカーを削除
+  Object.values(markerMap).forEach(m=>map.removeLayer(m));
+  markerMap={};
+
+  SPOTS.forEach(s=>{
+    const isNearest = s.no===nearestNo;
+    const marker = L.marker([s.lat,s.lng], { icon:makeIcon(s.no,isNearest) })
+      .addTo(map)
+      .bindPopup(buildPopup(s), { maxWidth:280 });
+    markerMap[s.no]=marker;
+  });
+}
+
+addAllMarkers();
+
+// 全拠点が収まるようズーム
+const bounds = SPOTS.map(s=>[s.lat,s.lng]);
+map.fitBounds(bounds, { padding:[40,40] });
+
+document.getElementById('status').textContent='✅ マップ読み込み完了 ― 📍ボタンで現在地を取得';
+
+// ── 現在地取得 ──
+function getLocation(){
+  if(!navigator.geolocation){
+    document.getElementById('status').textContent='⚠️ このブラウザは現在地取得に対応していません';
+    return;
+  }
+  document.getElementById('status').textContent='🔄 現在地を取得中...';
+
+  navigator.geolocation.getCurrentPosition(pos=>{
+    userLat=pos.coords.latitude;
+    userLng=pos.coords.longitude;
+
+    // 現在地マーカー（青ドット）
+    if(userDot)   map.removeLayer(userDot);
+    if(userCircle)map.removeLayer(userCircle);
+
+    userDot = L.circleMarker([userLat,userLng],{
+      radius:9, fillColor:'#2196F3', fillOpacity:1,
+      color:'white', weight:3
+    }).addTo(map).bindPopup('📍 現在地');
+
+    userCircle = L.circle([userLat,userLng],{
+      radius:80, fillColor:'#2196F3', fillOpacity:.1,
+      color:'#2196F3', weight:1
+    }).addTo(map);
+
+    // 距離計算・ソート
+    SPOTS.forEach(s=>{ s.dist=calcDist(userLat,userLng,s.lat,s.lng); });
+    SPOTS.sort((a,b)=>a.dist-b.dist);
+    nearestNo=SPOTS[0].no;
+
+    // マーカー再描画（最寄りをオレンジに）
+    addAllMarkers();
+
+    // 現在地中心にズーム
+    map.setView([userLat,userLng],14);
+
+    document.getElementById('status').textContent=
+      `⭐ 最寄りの拠点：No.${nearestNo} ${SPOTS[0].name}（${distLabel(SPOTS[0].dist)}）`;
+
+    renderList();
+
+    // 最寄りポップアップを自動表示
+    setTimeout(()=>{ markerMap[nearestNo]?.openPopup(); },400);
+
+  }, ()=>{
+    document.getElementById('status').textContent=
+      '⚠️ 現在地の取得が許可されませんでした。ブラウザの位置情報を許可してください。';
+  },{ enableHighAccuracy:true, timeout:10000 });
+}
+
+// ── 一覧レンダリング ──
+function renderList(){
+  document.getElementById('list').innerHTML = SPOTS.map((s,i)=>`
+    <div class="row" onclick="focusSpot(${s.no})">
+      <div class="badge${s.no===nearestNo?' near':''}">${s.no}</div>
+      <div class="info">
+        <div class="name">${s.no===nearestNo?'⭐ ':''}${s.name}</div>
+        <div class="addr">${s.addr}</div>
+      </div>
+      ${s.dist!==undefined?`<div class="dist">${distLabel(s.dist)}</div>`:''}
+    </div>
+  `).join('');
+}
+renderList();
+
+// ── 拠点フォーカス ──
+window.focusSpot=function(no){
+  const s=SPOTS.find(x=>x.no===no);
+  if(!s)return;
+  map.setView([s.lat,s.lng],16);
+  markerMap[no]?.openPopup();
+};
+
+// ── 📍ボタン ──
+document.getElementById('loc-btn').addEventListener('click',getLocation);
+
+// 起動時に自動取得
+getLocation();
+</script>
+</body>
+</html>
