@@ -74,6 +74,19 @@
     }
     #loc-btn:hover { background:#f0f0f0; }
 
+    /* 関連ページナビ */
+    #related-nav {
+      display:flex; gap:8px; padding:6px 12px;
+      background:#f1f8f2; border-bottom:1px solid #c8e6c9;
+      flex-shrink:0;
+    }
+    .rel-btn {
+      flex:1; display:flex; align-items:center; justify-content:center; gap:5px;
+      border:1.5px solid #c8e6c9; border-radius:6px; padding:6px 8px;
+      font-size:12px; font-weight:bold; text-decoration:none; color:#22aa44; background:white;
+    }
+    .rel-btn:hover { background:#e8f5e9; border-color:#22aa44; }
+
     /* ポップアップ */
     .popup-badge  { border-radius:4px; padding:2px 8px; font-size:11px; font-weight:bold; color:white; display:inline-block; margin-bottom:5px; }
     .popup-badge.chiiki { background:#e53935; }
@@ -99,6 +112,11 @@
 </header>
 
 <div id="status">🔄 マップを読み込み中...</div>
+
+<div id="related-nav">
+  <a href="hazard-map.html?openExternalBrowser=1" class="rel-btn">🗺️ ハザードマップ</a>
+  <a href="disaster-info.html?openExternalBrowser=1" class="rel-btn">🚨 災害情報の見方</a>
+</div>
 
 <button id="guide-btn" onclick="toggleGuide()">
   <span>📋 避難場所の種類と使い方を確認する</span>
