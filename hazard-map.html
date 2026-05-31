@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ハザードマップのご案内</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Hiragino Sans','Meiryo',sans-serif; background:#f0f4f8; min-height:100vh; }
+
+    header {
+      background:#1565c0; color:white;
+      padding:14px 16px; text-align:center;
+    }
+    header h1 { font-size:18px; font-weight:bold; }
+    header p  { font-size:12px; opacity:.9; margin-top:3px; }
+
+    .content { padding:16px 14px; display:flex; flex-direction:column; gap:14px; }
+
+    /* 説明カード */
+    .card {
+      background:white; border-radius:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,.1);
+      overflow:hidden;
+    }
+    .card-head {
+      background:#1565c0; color:white;
+      padding:10px 14px; font-size:14px; font-weight:bold;
+      display:flex; align-items:center; gap:8px;
+    }
+    .card-body { padding:12px 14px; }
+    .card-body p { font-size:13px; color:#333; line-height:1.7; margin-bottom:8px; }
+    .card-body p:last-child { margin-bottom:0; }
+
+    /* ポイントリスト */
+    .point-list { display:flex; flex-direction:column; gap:8px; }
+    .point {
+      display:flex; gap:10px; align-items:flex-start;
+      background:#e3f2fd; border-radius:8px; padding:10px 12px;
+    }
+    .point .icon { font-size:20px; flex-shrink:0; }
+    .point .text { font-size:13px; color:#0d47a1; line-height:1.6; }
+    .point .text b { color:#0a2e6e; }
+
+    /* 注意箱 */
+    .note {
+      background:#fff8e1; border-left:3px solid #f9a825;
+      border-radius:0 8px 8px 0; padding:10px 12px;
+      font-size:12px; color:#5d4037; line-height:1.7;
+    }
+    .note b { color:#333; }
+
+    /* ボタン */
+    .btn-area { display:flex; flex-direction:column; gap:10px; }
+
+    .btn-main {
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      background:#1565c0; color:white;
+      border:none; border-radius:12px; padding:16px;
+      font-size:16px; font-weight:bold; text-decoration:none;
+      box-shadow:0 3px 10px rgba(21,101,192,.4);
+    }
+    .btn-main:hover { background:#0d47a1; }
+
+    .btn-sub {
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      background:white; color:#1565c0;
+      border:2px solid #1565c0; border-radius:12px; padding:13px;
+      font-size:14px; font-weight:bold; text-decoration:none;
+    }
+    .btn-sub:hover { background:#e3f2fd; }
+
+    footer {
+      text-align:center; font-size:11px; color:#aaa;
+      padding:16px; margin-top:4px;
+    }
+    footer a { color:#1565c0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🗺️ ハザードマップのご案内</h1>
+  <p>横浜市都筑区 ／ 災害前に必ず確認しましょう</p>
+</header>
+
+<div class="content">
+
+  <!-- ハザードマップとは -->
+  <div class="card">
+    <div class="card-head">📋 ハザードマップとは？</div>
+    <div class="card-body">
+      <p>自然災害（洪水・土砂災害など）が発生した際に、<b>どのエリアがどれくらいの危険にさらされるか</b>を地図上に示したものです。</p>
+      <p>事前に確認しておくことで、いざという時に<b>どこへ逃げるべきか</b>の判断に役立ちます。</p>
+    </div>
+  </div>
+
+  <!-- 確認するポイント -->
+  <div class="card">
+    <div class="card-head">✅ 確認しておきたいポイント</div>
+    <div class="card-body">
+      <div class="point-list">
+        <div class="point">
+          <div class="icon">🏠</div>
+          <div class="text"><b>自宅の浸水リスク</b><br>大雨・洪水時に自宅周辺が何mの浸水想定か確認</div>
+        </div>
+        <div class="point">
+          <div class="icon">🚶</div>
+          <div class="text"><b>避難ルート</b><br>自宅から避難場所までの安全な経路を事前に把握</div>
+        </div>
+        <div class="point">
+          <div class="icon">⛰️</div>
+          <div class="text"><b>土砂災害警戒区域</b><br>急傾斜地・土砂崩れの危険エリアを確認</div>
+        </div>
+        <div class="point">
+          <div class="icon">👨‍👩‍👧</div>
+          <div class="text"><b>家族で共有</b><br>「どこに逃げるか」を家族全員で話し合う材料に</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 注意 -->
+  <div class="note">
+    ⚠️ <b>ハザードマップは平常時に確認するものです。</b><br>
+    災害発生時は気象庁・横浜市の最新情報に従い、早めに避難行動をとってください。
+  </div>
+
+  <!-- ボタン -->
+  <div class="btn-area">
+    <a href="https://www.city.yokohama.lg.jp/bousai-kyukyu-bohan/bousai-saigai/map/shinsui/tuduki.html"
+       target="_blank" class="btn-main">
+      🗺️ 横浜市 都筑区版ハザードマップを見る
+    </a>
+    <a href="https://disaportal.gsi.go.jp/" target="_blank" class="btn-sub">
+      🌐 国土地理院 重ねるハザードマップ（全国版）
+    </a>
+  </div>
+
+</div>
+
+<footer>
+  出典：
+  <a href="https://www.city.yokohama.lg.jp/bousai-kyukyu-bohan/bousai-saigai/map/shinsui/tuduki.html" target="_blank">横浜市 浸水ハザードマップ（都筑区版）</a>
+</footer>
+
+</body>
+</html>
