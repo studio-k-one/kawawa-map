@@ -120,11 +120,21 @@
     }
     .btn-sub.orange:hover { background:#fff3e0; }
 
+    .related { border-top:2px solid #e0e0e0; padding:14px 20px; background:#f8f9fa; }
+    .related h3 { font-size:12px; color:#888; margin-bottom:8px; }
+    .related-links { display:flex; gap:10px; flex-wrap:wrap; }
+    .rel-btn {
+      flex:1; min-width:140px; display:flex; align-items:center; justify-content:center; gap:6px;
+      border:1.5px solid #ddd; border-radius:8px; padding:10px 12px;
+      font-size:13px; font-weight:bold; text-decoration:none; color:#333; background:white;
+    }
+    .rel-btn:hover { background:#fff3e0; border-color:#ff8800; }
+
     footer {
       text-align:center; font-size:12px; color:#aaa;
-      padding:20px; border-top:1px solid #e0e0e0;
+      padding:16px 20px; border-top:1px solid #e0e0e0;
     }
-    footer a { color:#1565c0; }
+    footer a { color:#ff8800; }
   </style>
 </head>
 <body>
@@ -254,6 +264,14 @@
   </div>
 
 </div></div>
+
+<div class="wrapper related">
+  <h3>🔗 関連ページ</h3>
+  <div class="related-links">
+    <a href="shelter-map.html?openExternalBrowser=1" class="rel-btn">🏫 避難場所マップ</a>
+    <a href="hazard-map.html?openExternalBrowser=1" class="rel-btn">🗺️ ハザードマップ</a>
+  </div>
+</div>
 
 <footer class="wrapper">
   出典：
