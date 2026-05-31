@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>災害情報の見方ガイド</title>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Hiragino Sans','Meiryo',sans-serif; background:#f0f4f8; min-height:100vh; }
+
+    header {
+      background:#ff8800; color:white;
+      padding:20px 16px; text-align:center;
+    }
+    header h1 { font-size:22px; font-weight:bold; }
+    header p  { font-size:13px; opacity:.9; margin-top:4px; }
+
+    .wrapper { max-width:860px; margin:0 auto; }
+    .content { padding:24px 20px; display:flex; flex-direction:column; gap:18px; }
+
+    /* カード共通 */
+    .card { background:white; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.1); overflow:hidden; }
+    .card-head {
+      padding:12px 18px; font-size:15px; font-weight:bold;
+      display:flex; align-items:center; gap:8px; color:white;
+    }
+    .card-head.red    { background:#ff8800; }
+    .card-head.orange { background:#e65100; }
+    .card-head.blue   { background:#1565c0; }
+    .card-body { padding:16px 18px; }
+    .card-body p { font-size:14px; color:#333; line-height:1.8; margin-bottom:10px; }
+    .card-body p:last-child { margin-bottom:0; }
+
+    /* 警戒レベル表 */
+    .level-list { display:flex; flex-direction:column; gap:8px; }
+    .level {
+      display:flex; align-items:stretch; border-radius:10px;
+      overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.1);
+    }
+    .level-num {
+      width:60px; flex-shrink:0;
+      display:flex; flex-direction:column; align-items:center; justify-content:center;
+      padding:10px 4px; color:white; font-weight:bold; text-align:center;
+    }
+    .level-num .num  { font-size:22px; line-height:1; }
+    .level-num .unit { font-size:10px; margin-top:2px; }
+    .level-body { flex:1; padding:10px 14px; }
+    .level-body .name { font-size:14px; font-weight:bold; margin-bottom:3px; }
+    .level-body .who  { font-size:12px; color:#555; margin-bottom:3px; }
+    .level-body .act  { font-size:12px; font-weight:bold; }
+
+    .lv1 .level-num { background:#90a4ae; }
+    .lv1 .level-body { background:#eceff1; }
+    .lv1 .level-body .act { color:#37474f; }
+
+    .lv2 .level-num { background:#ffb300; }
+    .lv2 .level-body { background:#fff8e1; }
+    .lv2 .level-body .act { color:#e65100; }
+
+    .lv3 .level-num { background:#fb8c00; }
+    .lv3 .level-body { background:#fff3e0; }
+    .lv3 .level-body .act { color:#bf360c; }
+
+    .lv4 .level-num { background:#e53935; }
+    .lv4 .level-body { background:#ffebee; }
+    .lv4 .level-body .act { color:#ff8800; }
+
+    .lv5 .level-num { background:#6a1b9a; }
+    .lv5 .level-body { background:#f3e5f5; }
+    .lv5 .level-body .act { color:#4a0072; }
+
+    /* チェックリスト */
+    .check-grid {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+    }
+    @media(max-width:600px){ .check-grid { grid-template-columns:1fr; } }
+    .check-item {
+      display:flex; gap:10px; align-items:flex-start;
+      background:#fce4ec; border-radius:8px; padding:10px 12px;
+    }
+    .check-item .icon { font-size:22px; flex-shrink:0; }
+    .check-item .text { font-size:13px; color:#880e4f; line-height:1.6; }
+    .check-item .text b { color:#4a0013; font-size:14px; }
+
+    /* 注意箱 */
+    .note {
+      background:#fff8e1; border-left:4px solid #f9a825;
+      border-radius:0 8px 8px 0; padding:12px 16px;
+      font-size:13px; color:#5d4037; line-height:1.8;
+    }
+    .note b { color:#333; }
+
+    /* ボタン */
+    .btn-area { display:flex; flex-direction:column; gap:10px; }
+
+    .btn-main {
+      display:flex; align-items:center; justify-content:center; gap:10px;
+      background:#ff8800; color:white;
+      border:none; border-radius:12px; padding:18px 20px;
+      font-size:16px; font-weight:bold; text-decoration:none;
+      box-shadow:0 3px 10px rgba(255,136,0,.4);
+    }
+    .btn-main:hover { background:#cc6600; }
+
+    .btn-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media(max-width:480px){ .btn-grid { grid-template-columns:1fr; } }
+
+    .btn-sub {
+      display:flex; align-items:center; justify-content:center; gap:8px;
+      background:white; color:#1565c0;
+      border:2px solid #1565c0; border-radius:12px; padding:14px 12px;
+      font-size:13px; font-weight:bold; text-decoration:none; text-align:center;
+    }
+    .btn-sub:hover { background:#e3f2fd; }
+
+    .btn-sub.orange {
+      color:#e65100; border-color:#e65100;
+    }
+    .btn-sub.orange:hover { background:#fff3e0; }
+
+    footer {
+      text-align:center; font-size:12px; color:#aaa;
+      padding:20px; border-top:1px solid #e0e0e0;
+    }
+    footer a { color:#1565c0; }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🚨 災害情報の見方ガイド</h1>
+  <p>横浜市都筑区 ／ 警戒レベルと避難行動の目安</p>
+</header>
+
+<div class="wrapper"><div class="content">
+
+  <!-- 警戒レベルとは -->
+  <div class="card">
+    <div class="card-head red">📋 警戒レベルとは？</div>
+    <div class="card-body">
+      <p>大雨・洪水・土砂災害などの際、行政が発表する<b>避難行動の目安</b>です。レベル1〜5の5段階で示されており、<b>レベルが上がるほど危険が迫っている</b>ことを意味します。</p>
+      <p>気象庁・横浜市の情報と照らし合わせて、<b>早めの避難行動</b>を心がけましょう。</p>
+    </div>
+  </div>
+
+  <!-- 警戒レベル一覧 -->
+  <div class="card">
+    <div class="card-head orange">⚠️ 警戒レベル一覧と取るべき行動</div>
+    <div class="card-body">
+      <div class="level-list">
+
+        <div class="level lv1">
+          <div class="level-num"><span class="num">1</span><span class="unit">レベル</span></div>
+          <div class="level-body">
+            <div class="name">早期注意情報</div>
+            <div class="who">対象：全員</div>
+            <div class="act">→ 災害への心構えを高める</div>
+          </div>
+        </div>
+
+        <div class="level lv2">
+          <div class="level-num"><span class="num">2</span><span class="unit">レベル</span></div>
+          <div class="level-body">
+            <div class="name">注意報</div>
+            <div class="who">対象：全員</div>
+            <div class="act">→ 避難場所・ルートの再確認。ハザードマップを確認</div>
+          </div>
+        </div>
+
+        <div class="level lv3">
+          <div class="level-num"><span class="num">3</span><span class="unit">レベル</span></div>
+          <div class="level-body">
+            <div class="name">高齢者等避難</div>
+            <div class="who">対象：高齢者・障害者・乳幼児など避難に時間がかかる方</div>
+            <div class="act">→ 危険な場所から避難を開始する</div>
+          </div>
+        </div>
+
+        <div class="level lv4">
+          <div class="level-num"><span class="num">4</span><span class="unit">レベル</span></div>
+          <div class="level-body">
+            <div class="name">避難指示</div>
+            <div class="who">対象：危険な場所にいる全員</div>
+            <div class="act">→ 全員が速やかに避難する（このシステムが作動）</div>
+          </div>
+        </div>
+
+        <div class="level lv5">
+          <div class="level-num"><span class="num">5</span><span class="unit">レベル</span></div>
+          <div class="level-body">
+            <div class="name">緊急安全確保</div>
+            <div class="who">対象：全員</div>
+            <div class="act">→ 避難できない場合は建物内の高い場所へ移動し命を守る</div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- 事前にやっておくこと -->
+  <div class="card">
+    <div class="card-head blue">✅ 事前にやっておきたいこと</div>
+    <div class="card-body">
+      <div class="check-grid">
+        <div class="check-item">
+          <div class="icon">🗺️</div>
+          <div class="text"><b>ハザードマップを確認</b><br>自宅周辺の浸水・土砂リスクを把握</div>
+        </div>
+        <div class="check-item">
+          <div class="icon">🏫</div>
+          <div class="text"><b>避難場所を確認</b><br>川和小学校（地域防災拠点）の場所を把握</div>
+        </div>
+        <div class="check-item">
+          <div class="icon">🎒</div>
+          <div class="text"><b>非常持出品の準備</b><br>水・食料・薬・貴重品を3日分用意</div>
+        </div>
+        <div class="check-item">
+          <div class="icon">👨‍👩‍👧</div>
+          <div class="text"><b>家族で話し合い</b><br>「レベル3で避難する」などを決めておく</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 注意 -->
+  <div class="note">
+    ⚠️ <b>このシステム（安否確認）が作動するのは地震・大雨の警戒レベル4相当です。</b><br>
+    レベル4の避難指示が発令されたら、速やかに川和小学校または安全な場所へ避難してください。
+  </div>
+
+  <!-- ボタン -->
+  <div class="btn-area">
+    <a href="https://weather.yahoo.co.jp/weather/jp/14/4610/14118.html"
+       target="_blank" class="btn-main">
+      🚨 都筑区の最新 警報・避難情報を見る（Yahoo!天気）
+    </a>
+    <div class="btn-grid">
+      <a href="https://www.city.yokohama.lg.jp/tsuzuki/bosai_bohan/saigai/"
+         target="_blank" class="btn-sub">
+        🏛️ 横浜市都筑区<br>防災・災害情報
+      </a>
+      <a href="https://www.jma.go.jp/bosai/warning/#area_type=class20s&area_code=1410011"
+         target="_blank" class="btn-sub orange">
+        🌦️ 気象庁<br>警報・注意報
+      </a>
+    </div>
+  </div>
+
+</div></div>
+
+<footer class="wrapper">
+  出典：
+  <a href="https://www.city.yokohama.lg.jp/tsuzuki/bosai_bohan/saigai/" target="_blank">横浜市都筑区 防災・災害情報</a> ／
+  <a href="https://weather.yahoo.co.jp/weather/jp/14/4610/14118.html" target="_blank">Yahoo!天気・災害 都筑区</a>
+</footer>
+
+</body>
+</html>
