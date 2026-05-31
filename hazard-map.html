@@ -10,12 +10,15 @@
 
     header {
       background:#1565c0; color:white;
-      padding:14px 16px; text-align:center;
+      padding:20px 16px; text-align:center;
     }
-    header h1 { font-size:18px; font-weight:bold; }
-    header p  { font-size:12px; opacity:.9; margin-top:3px; }
+    header h1 { font-size:22px; font-weight:bold; }
+    header p  { font-size:13px; opacity:.9; margin-top:4px; }
 
-    .content { padding:16px 14px; display:flex; flex-direction:column; gap:14px; }
+    /* PC用中央寄せコンテナ */
+    .wrapper { max-width:860px; margin:0 auto; }
+
+    .content { padding:24px 20px; display:flex; flex-direction:column; gap:18px; }
 
     /* 説明カード */
     .card {
@@ -25,54 +28,71 @@
     }
     .card-head {
       background:#1565c0; color:white;
-      padding:10px 14px; font-size:14px; font-weight:bold;
+      padding:12px 18px; font-size:15px; font-weight:bold;
       display:flex; align-items:center; gap:8px;
     }
-    .card-body { padding:12px 14px; }
-    .card-body p { font-size:13px; color:#333; line-height:1.7; margin-bottom:8px; }
+    .card-body { padding:16px 18px; }
+    .card-body p { font-size:14px; color:#333; line-height:1.8; margin-bottom:10px; }
     .card-body p:last-child { margin-bottom:0; }
 
-    /* ポイントリスト */
-    .point-list { display:flex; flex-direction:column; gap:8px; }
-    .point {
-      display:flex; gap:10px; align-items:flex-start;
-      background:#e3f2fd; border-radius:8px; padding:10px 12px;
+    /* ポイントリスト：PC時は2列グリッド */
+    .point-list {
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
     }
-    .point .icon { font-size:20px; flex-shrink:0; }
-    .point .text { font-size:13px; color:#0d47a1; line-height:1.6; }
-    .point .text b { color:#0a2e6e; }
+    @media (max-width:600px) {
+      .point-list { grid-template-columns: 1fr; }
+    }
+    .point {
+      display:flex; gap:12px; align-items:flex-start;
+      background:#e3f2fd; border-radius:8px; padding:12px 14px;
+    }
+    .point .icon { font-size:24px; flex-shrink:0; }
+    .point .text { font-size:13px; color:#0d47a1; line-height:1.7; }
+    .point .text b { color:#0a2e6e; font-size:14px; }
 
     /* 注意箱 */
     .note {
-      background:#fff8e1; border-left:3px solid #f9a825;
-      border-radius:0 8px 8px 0; padding:10px 12px;
-      font-size:12px; color:#5d4037; line-height:1.7;
+      background:#fff8e1; border-left:4px solid #f9a825;
+      border-radius:0 8px 8px 0; padding:12px 16px;
+      font-size:13px; color:#5d4037; line-height:1.8;
     }
     .note b { color:#333; }
 
-    /* ボタン */
-    .btn-area { display:flex; flex-direction:column; gap:10px; }
+    /* ボタンエリア：PC時は横並び */
+    .btn-area {
+      display:grid;
+      grid-template-columns: 2fr 1fr;
+      gap:12px;
+      align-items:stretch;
+    }
+    @media (max-width:600px) {
+      .btn-area { grid-template-columns: 1fr; }
+    }
 
     .btn-main {
-      display:flex; align-items:center; justify-content:center; gap:8px;
+      display:flex; align-items:center; justify-content:center; gap:10px;
       background:#1565c0; color:white;
-      border:none; border-radius:12px; padding:16px;
+      border:none; border-radius:12px; padding:18px 20px;
       font-size:16px; font-weight:bold; text-decoration:none;
       box-shadow:0 3px 10px rgba(21,101,192,.4);
+      white-space:nowrap;
     }
     .btn-main:hover { background:#0d47a1; }
 
     .btn-sub {
       display:flex; align-items:center; justify-content:center; gap:8px;
       background:white; color:#1565c0;
-      border:2px solid #1565c0; border-radius:12px; padding:13px;
+      border:2px solid #1565c0; border-radius:12px; padding:16px 14px;
       font-size:14px; font-weight:bold; text-decoration:none;
+      text-align:center;
     }
     .btn-sub:hover { background:#e3f2fd; }
 
     footer {
-      text-align:center; font-size:11px; color:#aaa;
-      padding:16px; margin-top:4px;
+      text-align:center; font-size:12px; color:#aaa;
+      padding:20px; margin-top:4px; border-top:1px solid #e0e0e0;
     }
     footer a { color:#1565c0; }
   </style>
@@ -84,7 +104,7 @@
   <p>横浜市都筑区 ／ 災害前に必ず確認しましょう</p>
 </header>
 
-<div class="content">
+<div class="wrapper"><div class="content">
 
   <!-- ハザードマップとは -->
   <div class="card">
@@ -137,9 +157,9 @@
     </a>
   </div>
 
-</div>
+</div></div>
 
-<footer>
+<footer class="wrapper">
   出典：
   <a href="https://www.city.yokohama.lg.jp/bousai-kyukyu-bohan/bousai-saigai/map/shinsui/tuduki.html" target="_blank">横浜市 浸水ハザードマップ（都筑区版）</a>
 </footer>
