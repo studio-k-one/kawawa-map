@@ -7,17 +7,14 @@
   <style>
     * { margin:0; padding:0; box-sizing:border-box; }
     body { font-family:'Hiragino Sans','Meiryo',sans-serif; background:#f0f4f8; min-height:100vh; }
-
     header {
       background:#7744cc; color:white;
       padding:20px 16px; text-align:center;
     }
     header h1 { font-size:22px; font-weight:bold; }
     header p  { font-size:13px; opacity:.9; margin-top:4px; }
-
     .wrapper { max-width:860px; margin:0 auto; }
     .content { padding:20px 16px; display:flex; flex-direction:column; gap:16px; }
-
     /* カード */
     .card { background:white; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.1); overflow:hidden; }
     .card-head {
@@ -30,7 +27,6 @@
     .card-head.red    { background:#ee2222; }
     .card-head.orange { background:#ff8800; }
     .card-body { padding:14px 16px; }
-
     /* フロー */
     .flow { display:flex; flex-direction:column; gap:0; }
     .flow-step {
@@ -52,13 +48,11 @@
       border-radius:4px; padding:1px 8px; font-size:11px; font-weight:bold;
       margin-top:4px;
     }
-
     /* リッチメニューボタン一覧 */
     .menu-grid {
       display:grid; grid-template-columns:1fr 1fr; gap:10px;
     }
     @media(max-width:480px){ .menu-grid { grid-template-columns:1fr; } }
-
     .menu-item {
       border-radius:10px; padding:12px 14px;
       display:flex; gap:10px; align-items:flex-start;
@@ -68,7 +62,6 @@
     .menu-item .body {}
     .menu-item .name { font-size:14px; font-weight:bold; margin-bottom:3px; }
     .menu-item .desc { font-size:12px; line-height:1.6; }
-
     .mi-green  { background:#e8f5e9; color:#1b5e20; }
     .mi-green  .name { color:#2e7d32; }
     .mi-blue   { background:#e3f2fd; color:#0d47a1; }
@@ -81,7 +74,6 @@
     .mi-teal   .name { color:#00695c; }
     .mi-purple { background:#f3e5f5; color:#4a148c; }
     .mi-purple .name { color:#7744cc; }
-
     /* 安否確認ボタン */
     .answer-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
     .answer-btn {
@@ -92,7 +84,6 @@
     .answer-btn.red    { background:#ffebee; color:#c62828; border:1.5px solid #ef9a9a; }
     .answer-btn.blue   { background:#e3f2fd; color:#1565c0; border:1.5px solid #90caf9; }
     .answer-btn.indigo { background:#e8eaf6; color:#283593; border:1.5px solid #9fa8da; }
-
     /* SOS特別説明 */
     .sos-flow {
       background:#fff8e1; border-radius:8px; padding:12px 14px;
@@ -100,7 +91,6 @@
     }
     .sos-flow .sos-title { font-size:13px; font-weight:bold; color:#e65100; margin-bottom:6px; }
     .sos-step { font-size:12px; color:#555; line-height:2; }
-
     /* 注意箱 */
     .note {
       background:#f3e5f5; border-left:4px solid #7744cc;
@@ -108,7 +98,6 @@
       font-size:13px; color:#4a148c; line-height:1.8;
     }
     .note b { color:#311b92; }
-
     /* 関連ページ */
     .related { border-top:2px solid #e0e0e0; padding:14px 16px; background:#f8f9fa; }
     .related h3 { font-size:12px; color:#888; margin-bottom:8px; }
@@ -119,7 +108,6 @@
       font-size:13px; font-weight:bold; text-decoration:none; color:#333; background:white;
     }
     .rel-btn:hover { background:#f3e5f5; border-color:#7744cc; }
-
     footer {
       text-align:center; font-size:12px; color:#aaa;
       padding:16px; border-top:1px solid #e0e0e0;
@@ -127,14 +115,11 @@
   </style>
 </head>
 <body>
-
 <header>
   <h1>❓ 使い方ガイド</h1>
   <p>川和町 自治会 LINE安否確認システム</p>
 </header>
-
 <div class="wrapper"><div class="content">
-
   <!-- このシステムについて -->
   <div class="card">
     <div class="card-head purple">📋 このシステムについて</div>
@@ -161,7 +146,7 @@
             <div class="step-desc">4つのボタンから状況を選んでタップするだけで安否報告が完了します。文字を打つ必要はありません。</div>
             <div class="answer-grid" style="margin-top:8px;">
               <div class="answer-btn green">✅ 無事です</div>
-              <div class="answer-btn red">🆘 救助が必要</div>
+              <div class="answer-btn red">🙋 手助けが必要</div>
               <div class="answer-btn blue">🏠 自宅待機中</div>
               <div class="answer-btn indigo">🌊 浸水あり</div>
             </div>
@@ -177,25 +162,23 @@
       </div>
     </div>
   </div>
-
   <!-- 救助要請の特別説明 -->
   <div class="card">
-    <div class="card-head red">🆘 「救助が必要」を選んだ場合</div>
+    <div class="card-head red">🙋 「手助けが必要」を選んだ場合</div>
     <div class="card-body">
-      <div class="step-desc" style="margin-bottom:10px;">「🆘 救助が必要」をタップすると、追加で<b>現在地の共有</b>をお願いします。</div>
+      <div class="step-desc" style="margin-bottom:10px;">「🙋 手助けが必要」をタップすると、追加で<b>現在地の共有</b>をお願いします。</div>
       <div class="sos-flow">
         <div class="sos-title">📍 位置情報を送る手順</div>
         <div class="sos-step">
-          ① 「🆘 救助が必要」をタップ<br>
+          ① 「🙋 手助けが必要」をタップ<br>
           ② LINEから「現在地を送ってください」と返信が届く<br>
-          ③ LINEの📎（添付）→「位置情報」をタップ<br>
+          ③ 「現在地を送信する▶」をタップ<br>
           ④ 現在地を確認して「送信」<br>
           ⑤ 自治会の管理者グループに名前・住所・地図リンクが自動送信される
         </div>
       </div>
     </div>
   </div>
-
   <!-- メンバー登録について -->
   <div class="card">
     <div class="card-head green">📝 メンバー登録について</div>
@@ -217,7 +200,6 @@
       </div>
     </div>
   </div>
-
   <!-- リッチメニューの使い方 -->
   <div class="card">
     <div class="card-head purple">📱 メニューボタンの使い方</div>
@@ -240,8 +222,8 @@
         <a href="javascript:void(0)" class="menu-item mi-red">
           <div class="icon">🆘</div>
           <div class="body">
-            <div class="name">救助要請（緊急）</div>
-            <div class="desc">今すぐ救助が必要な時にタップ</div>
+            <div class="name">手助け要請</div>
+            <div class="desc">今すぐ手助けが必要な時にタップ</div>
           </div>
         </a>
         <a href="disaster-info.html?openExternalBrowser=1" class="menu-item mi-orange">
@@ -268,15 +250,12 @@
       </div>
     </div>
   </div>
-
   <!-- 注意 -->
   <div class="note">
     ⚠️ <b>安否確認メッセージが届いたら、できるだけ早くボタンをタップしてください。</b><br>
     回答がないと、自治会担当者が個別に連絡を取る場合があります。
   </div>
-
 </div></div>
-
 <div class="wrapper related">
   <h3>🔗 関連ページ</h3>
   <div class="related-links">
@@ -285,10 +264,8 @@
     <a href="disaster-info.html?openExternalBrowser=1" class="rel-btn">🚨 災害情報の見方</a>
   </div>
 </div>
-
 <footer class="wrapper">
   川和町 自治会 LINE安否確認システム
 </footer>
-
 </body>
 </html>
