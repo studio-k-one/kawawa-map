@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>テスト運用メンバー募集｜さくら台自治会 災害時安否確認システム</title>
+<style>
+  :root{
+    --cream:#FBF3E6;
+    --orange:#EF9F27;
+    --orange-dark:#C97A12;
+    --green:#3FA66B;
+    --green-dark:#2C7C4F;
+    --blue:#4A90D9;
+    --blue-dark:#2E6CAE;
+    --brown:#5B4636;
+    --ink:#3a342c;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
+    background:var(--cream);
+    color:var(--ink);
+    line-height:1.8;
+  }
+  .wrap{max-width:720px;margin:0 auto;padding:40px 24px 0;position:relative;overflow:hidden;}
+  .dot{position:absolute;border-radius:50%;opacity:.55;}
+  .dot.d1{width:18px;height:18px;background:#F4C76A;top:10px;left:14px;}
+  .dot.d2{width:14px;height:14px;background:#8FC4D8;top:90px;right:18px;}
+  .dot.d3{width:22px;height:22px;background:#F4C76A;top:330px;left:0;}
+  .dot.d4{width:16px;height:16px;background:#8FC4D8;top:560px;right:6px;}
+
+  .kicker{
+    text-align:center;font-size:13px;color:#8a7a64;letter-spacing:.06em;margin-bottom:6px;
+  }
+  h1.headline{
+    text-align:center;font-size:30px;margin:0 0 6px;color:var(--ink);
+    font-weight:800;letter-spacing:.02em;
+  }
+  h1.headline .accent{color:var(--orange-dark);}
+  .sub{text-align:center;font-size:14.5px;color:#7a6c58;margin:0 0 32px;}
+
+  .chat-card{
+    background:#fff;border-radius:16px;box-shadow:0 4px 14px rgba(0,0,0,.06);
+    padding:22px 22px 24px;margin:0 auto 36px;max-width:380px;position:relative;z-index:2;
+  }
+  .chat-bubble{
+    background:#F4F4F2;border-radius:14px;padding:12px 14px;font-size:12.5px;color:#555;margin-bottom:10px;
+  }
+  .chat-bubble .tag{font-size:11px;color:var(--orange-dark);font-weight:700;margin-bottom:4px;}
+  .chat-btn{
+    display:inline-block;background:var(--green);color:#fff;font-size:13px;font-weight:700;
+    padding:9px 18px;border-radius:18px;margin-top:4px;
+  }
+  .chat-reply{font-size:12px;color:#888;margin-top:14px;}
+
+  .lead{
+    background:#fff;border-radius:14px;padding:22px 24px;font-size:14.5px;color:#544a3d;
+    margin-bottom:30px;position:relative;z-index:2;
+  }
+
+  .tags{display:flex;flex-direction:column;gap:14px;margin-bottom:36px;position:relative;z-index:2;}
+  .tag-card{background:#fff;border-radius:14px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.04);}
+  .tag-head{
+    padding:10px 18px;font-size:14.5px;font-weight:700;color:#fff;
+  }
+  .tag-head.orange{background:var(--orange);}
+  .tag-head.green{background:var(--green);}
+  .tag-head.blue{background:var(--blue);}
+  .tag-body{padding:14px 18px 18px;font-size:13.5px;color:#5b5246;}
+
+  .cta{
+    text-align:center;background:#fff;border-radius:16px;padding:32px 24px;margin-bottom:30px;
+    position:relative;z-index:2;
+  }
+  .cta p{font-size:14px;color:#5b5246;margin:0 0 18px;}
+  .cta a.btn{
+    display:inline-block;background:var(--orange);color:#fff;font-weight:800;font-size:15.5px;
+    padding:14px 40px;border-radius:26px;text-decoration:none;box-shadow:0 4px 10px rgba(239,159,39,.35);
+  }
+  .cta .note{font-size:11.5px;color:#a39782;margin-top:14px;}
+
+  footer.contact{
+    background:var(--brown);color:#f4ead8;padding:26px 24px;margin-top:8px;
+  }
+  footer.contact .ttl{
+    font-size:13.5px;font-weight:700;display:flex;align-items:center;gap:6px;margin-bottom:14px;
+  }
+  footer.contact .ttl::before{content:"▼";color:var(--orange);font-size:11px;}
+  footer.contact .org{font-size:15px;font-weight:800;margin-bottom:6px;}
+  footer.contact .line{font-size:12.5px;color:#e6dcc8;}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <span class="dot d1"></span>
+  <span class="dot d2"></span>
+  <span class="dot d3"></span>
+  <span class="dot d4"></span>
+
+  <div class="kicker">さくら台自治会　災害時安否確認システム</div>
+  <h1 class="headline">みんなでつくる<br><span class="accent">もしもの安心</span></h1>
+  <p class="sub">テスト運用にご協力いただける方を募集しています</p>
+
+  <div class="chat-card">
+    <div class="chat-bubble">
+      <div class="tag">📢 さくら台町からのお知らせ</div>
+      地震や大雨などの災害が発生しました。<br>あなたの安否を教えてください。
+      <div><span class="chat-btn">✅ 安否を送る</span></div>
+    </div>
+    <div class="chat-reply">「みんなの安否が確認できました！」</div>
+  </div>
+
+  <div class="lead">
+    このシステムは、地震や大雨などの災害が発生したとき、LINEで安否をワンタップで知らせ合う仕組みです。
+    本格運用の前に、実際の使い勝手を確認するためのテスト運用にご協力いただける方を募集しています。
+  </div>
+
+  <div class="tags">
+    <div class="tag-card">
+      <div class="tag-head orange">🔔 安否確認のしくみ</div>
+      <div class="tag-body">震度5弱以上などの災害を検知すると、LINEで自動的に安否確認メッセージが届きます。ボタンを1回タップするだけで回答できます。</div>
+    </div>
+    <div class="tag-card">
+      <div class="tag-head green">🙋 手助け要請</div>
+      <div class="tag-body">助けが必要なときは「手助けが必要」ボタンをタップ。現在地を送ると、自治会の担当者に通知されます。</div>
+    </div>
+    <div class="tag-card">
+      <div class="tag-head blue">🧪 テスト運用について</div>
+      <div class="tag-body">本番導入前の試験運用です。実際の災害だけでなく、テスト配信にもご協力いただきます。気になることはいつでもご連絡ください。</div>
+    </div>
+  </div>
+
+  <div class="cta">
+    <p>テスト運用にご協力いただける方は、下のボタンからメンバー登録をお願いいたします。</p>
+    <a class="btn" href="https://docs.google.com/forms/d/e/REPLACE_WITH_FORM_ID/viewform">メンバー登録はこちら</a>
+    <div class="note">※LINEのトーク内からタップすると、お名前等の入力欄が一部自動で入ります。</div>
+  </div>
+</div>
+
+<footer class="contact">
+  <div class="ttl">お問い合わせ先</div>
+  <div class="org">さくら台自治会　安否確認システム担当</div>
+  <div class="line">メール：info@example.com　／　電話：000-0000-0000</div>
+</footer>
+
+</body>
+</html>
