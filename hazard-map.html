@@ -5,15 +5,26 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ハザードマップのご案内</title>
   <style>
+    :root{
+      --cream:#FBF3E6;
+      --orange:#EF9F27;
+      --orange-dark:#C97A12;
+      --green:#3FA66B;
+      --green-dark:#2C7C4F;
+      --blue:#4A90D9;
+      --blue-dark:#2E6CAE;
+      --brown:#5B4636;
+      --ink:#3a342c;
+    }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Hiragino Sans','Meiryo',sans-serif; background:#f0f4f8; min-height:100vh; }
+    body { font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; }
 
     header {
-      background:#3399ee; color:white;
-      padding:20px 16px; text-align:center;
+      background:var(--blue); color:white;
+      padding:24px 16px; text-align:center;
     }
-    header h1 { font-size:22px; font-weight:bold; }
-    header p  { font-size:13px; opacity:.9; margin-top:4px; }
+    header h1 { font-size:22px; font-weight:800; }
+    header p  { font-size:13px; opacity:.92; margin-top:4px; }
 
     /* PC用中央寄せコンテナ */
     .wrapper { max-width:860px; margin:0 auto; }
@@ -22,17 +33,17 @@
 
     /* 説明カード */
     .card {
-      background:white; border-radius:12px;
-      box-shadow:0 2px 8px rgba(0,0,0,.1);
+      background:white; border-radius:16px;
+      box-shadow:0 4px 14px rgba(0,0,0,.06);
       overflow:hidden;
     }
     .card-head {
-      background:#3399ee; color:white;
-      padding:12px 18px; font-size:15px; font-weight:bold;
+      background:var(--blue); color:white;
+      padding:13px 18px; font-size:15px; font-weight:700;
       display:flex; align-items:center; gap:8px;
     }
     .card-body { padding:16px 18px; }
-    .card-body p { font-size:14px; color:#333; line-height:1.8; margin-bottom:10px; }
+    .card-body p { font-size:14px; color:#544a3d; line-height:1.8; margin-bottom:10px; }
     .card-body p:last-child { margin-bottom:0; }
 
     /* ポイントリスト：PC時は2列グリッド */
@@ -46,19 +57,19 @@
     }
     .point {
       display:flex; gap:12px; align-items:flex-start;
-      background:#e3f2fd; border-radius:8px; padding:12px 14px;
+      background:#E6F1FB; border-radius:10px; padding:12px 14px;
     }
     .point .icon { font-size:24px; flex-shrink:0; }
-    .point .text { font-size:13px; color:#1a7acc; line-height:1.7; }
-    .point .text b { color:#0a2e6e; font-size:14px; }
+    .point .text { font-size:13px; color:var(--blue-dark); line-height:1.7; }
+    .point .text b { color:#1c3f63; font-size:14px; }
 
     /* 注意箱 */
     .note {
-      background:#fff8e1; border-left:4px solid #f9a825;
-      border-radius:0 8px 8px 0; padding:12px 16px;
-      font-size:13px; color:#5d4037; line-height:1.8;
+      background:#EFE6E0; border-left:4px solid var(--brown);
+      border-radius:0 10px 10px 0; padding:12px 16px;
+      font-size:13px; color:var(--brown); line-height:1.8;
     }
-    .note b { color:#333; }
+    .note b { color:#3a2c20; }
 
     /* ボタンエリア：PC時は横並び */
     .btn-area {
@@ -73,38 +84,38 @@
 
     .btn-main {
       display:flex; align-items:center; justify-content:center; gap:10px;
-      background:#3399ee; color:white;
-      border:none; border-radius:12px; padding:18px 20px;
-      font-size:16px; font-weight:bold; text-decoration:none;
-      box-shadow:0 3px 10px rgba(51,153,238,.4);
+      background:var(--blue); color:white;
+      border:none; border-radius:14px; padding:18px 20px;
+      font-size:16px; font-weight:700; text-decoration:none;
+      box-shadow:0 4px 10px rgba(74,144,217,.35);
       white-space:nowrap;
     }
-    .btn-main:hover { background:#1a7acc; }
+    .btn-main:hover { background:var(--blue-dark); }
 
     .btn-sub {
       display:flex; align-items:center; justify-content:center; gap:8px;
-      background:white; color:#3399ee;
-      border:2px solid #3399ee; border-radius:12px; padding:16px 14px;
-      font-size:14px; font-weight:bold; text-decoration:none;
+      background:white; color:var(--blue-dark);
+      border:2px solid var(--blue); border-radius:14px; padding:16px 14px;
+      font-size:14px; font-weight:700; text-decoration:none;
       text-align:center;
     }
-    .btn-sub:hover { background:#e3f2fd; }
+    .btn-sub:hover { background:#E6F1FB; }
 
-    .related { border-top:2px solid #e0e0e0; padding:14px 20px; background:#f8f9fa; }
-    .related h3 { font-size:12px; color:#888; margin-bottom:8px; }
+    .related { border-top:2px solid #efe3cf; padding:14px 20px; background:#F7EEDD; }
+    .related h3 { font-size:12px; color:#9a8a72; margin-bottom:8px; }
     .related-links { display:flex; gap:10px; flex-wrap:wrap; }
     .rel-btn {
       flex:1; min-width:140px; display:flex; align-items:center; justify-content:center; gap:6px;
-      border:1.5px solid #ddd; border-radius:8px; padding:10px 12px;
-      font-size:13px; font-weight:bold; text-decoration:none; color:#333; background:white;
+      border:1.5px solid #e6d8bd; border-radius:10px; padding:10px 12px;
+      font-size:13px; font-weight:700; text-decoration:none; color:var(--ink); background:white;
     }
-    .rel-btn:hover { background:#e3f2fd; border-color:#3399ee; }
+    .rel-btn:hover { background:#E6F1FB; border-color:var(--blue); }
 
     footer {
-      text-align:center; font-size:12px; color:#aaa;
-      padding:16px 20px; margin-top:0; border-top:1px solid #e0e0e0;
+      text-align:center; font-size:12px; color:#f4ead8;
+      padding:18px 20px; background:var(--brown);
     }
-    footer a { color:#3399ee; }
+    footer a { color:#BBD8F2; }
   </style>
 </head>
 <body>

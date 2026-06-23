@@ -5,69 +5,80 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>災害情報の見方ガイド</title>
   <style>
+    :root{
+      --cream:#FBF3E6;
+      --orange:#EF9F27;
+      --orange-dark:#C97A12;
+      --green:#3FA66B;
+      --green-dark:#2C7C4F;
+      --blue:#4A90D9;
+      --blue-dark:#2E6CAE;
+      --brown:#5B4636;
+      --ink:#3a342c;
+    }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Hiragino Sans','Meiryo',sans-serif; background:#f0f4f8; min-height:100vh; }
+    body { font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; }
 
     header {
-      background:#ff8800; color:white;
-      padding:20px 16px; text-align:center;
+      background:var(--orange); color:white;
+      padding:24px 16px; text-align:center;
     }
-    header h1 { font-size:22px; font-weight:bold; }
-    header p  { font-size:13px; opacity:.9; margin-top:4px; }
+    header h1 { font-size:22px; font-weight:800; }
+    header p  { font-size:13px; opacity:.92; margin-top:4px; }
 
     .wrapper { max-width:860px; margin:0 auto; }
     .content { padding:24px 20px; display:flex; flex-direction:column; gap:18px; }
 
     /* カード共通 */
-    .card { background:white; border-radius:12px; box-shadow:0 2px 8px rgba(0,0,0,.1); overflow:hidden; }
+    .card { background:white; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); overflow:hidden; }
     .card-head {
-      padding:12px 18px; font-size:15px; font-weight:bold;
+      padding:13px 18px; font-size:15px; font-weight:700;
       display:flex; align-items:center; gap:8px; color:white;
     }
-    .card-head.red    { background:#ff8800; }
-    .card-head.orange { background:#e65100; }
-    .card-head.blue   { background:#1565c0; }
+    .card-head.orange { background:var(--orange); }
+    .card-head.amber  { background:var(--orange-dark); }
+    .card-head.blue   { background:var(--blue); }
     .card-body { padding:16px 18px; }
-    .card-body p { font-size:14px; color:#333; line-height:1.8; margin-bottom:10px; }
+    .card-body p { font-size:14px; color:#544a3d; line-height:1.8; margin-bottom:10px; }
     .card-body p:last-child { margin-bottom:0; }
 
     /* 警戒レベル表 */
     .level-list { display:flex; flex-direction:column; gap:8px; }
     .level {
-      display:flex; align-items:stretch; border-radius:10px;
-      overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.1);
+      display:flex; align-items:stretch; border-radius:12px;
+      overflow:hidden; box-shadow:0 1px 4px rgba(0,0,0,.08);
     }
     .level-num {
       width:60px; flex-shrink:0;
       display:flex; flex-direction:column; align-items:center; justify-content:center;
-      padding:10px 4px; color:white; font-weight:bold; text-align:center;
+      padding:10px 4px; color:white; font-weight:700; text-align:center;
     }
     .level-num .num  { font-size:22px; line-height:1; }
     .level-num .unit { font-size:10px; margin-top:2px; }
     .level-body { flex:1; padding:10px 14px; }
-    .level-body .name { font-size:14px; font-weight:bold; margin-bottom:3px; }
-    .level-body .who  { font-size:12px; color:#555; margin-bottom:3px; }
-    .level-body .act  { font-size:12px; font-weight:bold; }
+    .level-body .name { font-size:14px; font-weight:700; margin-bottom:3px; }
+    .level-body .who  { font-size:12px; color:#6b5f4e; margin-bottom:3px; }
+    .level-body .act  { font-size:12px; font-weight:700; }
 
-    .lv1 .level-num { background:#90a4ae; }
-    .lv1 .level-body { background:#eceff1; }
-    .lv1 .level-body .act { color:#37474f; }
+    .lv1 .level-num { background:#A89A8C; }
+    .lv1 .level-body { background:#F2ECE2; }
+    .lv1 .level-body .act { color:#5b5246; }
 
-    .lv2 .level-num { background:#ffb300; }
-    .lv2 .level-body { background:#fff8e1; }
-    .lv2 .level-body .act { color:#e65100; }
+    .lv2 .level-num { background:#F4B860; }
+    .lv2 .level-body { background:#FCEAD0; }
+    .lv2 .level-body .act { color:var(--orange-dark); }
 
-    .lv3 .level-num { background:#fb8c00; }
-    .lv3 .level-body { background:#fff3e0; }
-    .lv3 .level-body .act { color:#bf360c; }
+    .lv3 .level-num { background:var(--orange); }
+    .lv3 .level-body { background:#FBE0BC; }
+    .lv3 .level-body .act { color:var(--orange-dark); }
 
-    .lv4 .level-num { background:#e53935; }
-    .lv4 .level-body { background:#ffebee; }
-    .lv4 .level-body .act { color:#ff8800; }
+    .lv4 .level-num { background:#C0392B; }
+    .lv4 .level-body { background:#F5DCD7; }
+    .lv4 .level-body .act { color:#C0392B; }
 
-    .lv5 .level-num { background:#6a1b9a; }
-    .lv5 .level-body { background:#f3e5f5; }
-    .lv5 .level-body .act { color:#4a0072; }
+    .lv5 .level-num { background:var(--brown); }
+    .lv5 .level-body { background:#EFE6E0; }
+    .lv5 .level-body .act { color:var(--brown); }
 
     /* チェックリスト */
     .check-grid {
@@ -78,63 +89,63 @@
     @media(max-width:600px){ .check-grid { grid-template-columns:1fr; } }
     .check-item {
       display:flex; gap:10px; align-items:flex-start;
-      background:#fce4ec; border-radius:8px; padding:10px 12px;
+      background:#FCEAD0; border-radius:10px; padding:10px 12px;
     }
     .check-item .icon { font-size:22px; flex-shrink:0; }
-    .check-item .text { font-size:13px; color:#880e4f; line-height:1.6; }
-    .check-item .text b { color:#4a0013; font-size:14px; }
+    .check-item .text { font-size:13px; color:var(--orange-dark); line-height:1.6; }
+    .check-item .text b { color:#5b3a0c; font-size:14px; }
 
     /* 注意箱 */
     .note {
-      background:#fff8e1; border-left:4px solid #f9a825;
-      border-radius:0 8px 8px 0; padding:12px 16px;
-      font-size:13px; color:#5d4037; line-height:1.8;
+      background:#EFE6E0; border-left:4px solid var(--brown);
+      border-radius:0 10px 10px 0; padding:12px 16px;
+      font-size:13px; color:var(--brown); line-height:1.8;
     }
-    .note b { color:#333; }
+    .note b { color:#3a2c20; }
 
     /* ボタン */
     .btn-area { display:flex; flex-direction:column; gap:10px; }
 
     .btn-main {
       display:flex; align-items:center; justify-content:center; gap:10px;
-      background:#ff8800; color:white;
-      border:none; border-radius:12px; padding:18px 20px;
-      font-size:16px; font-weight:bold; text-decoration:none;
-      box-shadow:0 3px 10px rgba(255,136,0,.4);
+      background:var(--orange); color:white;
+      border:none; border-radius:14px; padding:18px 20px;
+      font-size:16px; font-weight:700; text-decoration:none;
+      box-shadow:0 4px 10px rgba(239,159,39,.35);
     }
-    .btn-main:hover { background:#cc6600; }
+    .btn-main:hover { background:var(--orange-dark); }
 
     .btn-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
     @media(max-width:480px){ .btn-grid { grid-template-columns:1fr; } }
 
     .btn-sub {
       display:flex; align-items:center; justify-content:center; gap:8px;
-      background:white; color:#1565c0;
-      border:2px solid #1565c0; border-radius:12px; padding:14px 12px;
-      font-size:13px; font-weight:bold; text-decoration:none; text-align:center;
+      background:white; color:var(--blue-dark);
+      border:2px solid var(--blue); border-radius:14px; padding:14px 12px;
+      font-size:13px; font-weight:700; text-decoration:none; text-align:center;
     }
-    .btn-sub:hover { background:#e3f2fd; }
+    .btn-sub:hover { background:#E6F1FB; }
 
     .btn-sub.orange {
-      color:#e65100; border-color:#e65100;
+      color:var(--orange-dark); border-color:var(--orange);
     }
-    .btn-sub.orange:hover { background:#fff3e0; }
+    .btn-sub.orange:hover { background:#FCEAD0; }
 
-    .related { border-top:2px solid #e0e0e0; padding:14px 20px; background:#f8f9fa; }
-    .related h3 { font-size:12px; color:#888; margin-bottom:8px; }
+    .related { border-top:2px solid #efe3cf; padding:14px 20px; background:#F7EEDD; }
+    .related h3 { font-size:12px; color:#9a8a72; margin-bottom:8px; }
     .related-links { display:flex; gap:10px; flex-wrap:wrap; }
     .rel-btn {
       flex:1; min-width:140px; display:flex; align-items:center; justify-content:center; gap:6px;
-      border:1.5px solid #ddd; border-radius:8px; padding:10px 12px;
-      font-size:13px; font-weight:bold; text-decoration:none; color:#333; background:white;
+      border:1.5px solid #e6d8bd; border-radius:10px; padding:10px 12px;
+      font-size:13px; font-weight:700; text-decoration:none; color:var(--ink); background:white;
     }
-    .rel-btn:hover { background:#fff3e0; border-color:#ff8800; }
+    .rel-btn:hover { background:#FCEAD0; border-color:var(--orange); }
 
     footer {
-      text-align:center; font-size:12px; color:#aaa;
-      padding:16px 20px; border-top:1px solid #e0e0e0;
+      text-align:center; font-size:12px; color:#f4ead8;
+      padding:18px 20px; background:var(--brown);
     }
-    footer a { color:#ff8800; }
+    footer a { color:#FCEAD0; }
   </style>
 </head>
 <body>
@@ -148,7 +159,7 @@
 
   <!-- 警戒レベルとは -->
   <div class="card">
-    <div class="card-head red">📋 警戒レベルとは？</div>
+    <div class="card-head orange">📋 警戒レベルとは？</div>
     <div class="card-body">
       <p>大雨・洪水・土砂災害などの際、行政が発表する<b>避難行動の目安</b>です。レベル1〜5の5段階で示されており、<b>レベルが上がるほど危険が迫っている</b>ことを意味します。</p>
       <p>気象庁・横浜市の情報と照らし合わせて、<b>早めの避難行動</b>を心がけましょう。</p>
@@ -157,7 +168,7 @@
 
   <!-- 警戒レベル一覧 -->
   <div class="card">
-    <div class="card-head orange">⚠️ 警戒レベル一覧と取るべき行動</div>
+    <div class="card-head amber">⚠️ 警戒レベル一覧と取るべき行動</div>
     <div class="card-body">
       <div class="level-list">
 

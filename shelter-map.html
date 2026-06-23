@@ -7,18 +7,29 @@
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <style>
+    :root{
+      --cream:#FBF3E6;
+      --orange:#EF9F27;
+      --orange-dark:#C97A12;
+      --green:#3FA66B;
+      --green-dark:#2C7C4F;
+      --blue:#4A90D9;
+      --blue-dark:#2E6CAE;
+      --brown:#5B4636;
+      --ink:#3a342c;
+    }
     * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:'Hiragino Sans','Meiryo',sans-serif; display:flex; flex-direction:column; height:100vh; }
+    body { font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif; display:flex; flex-direction:column; height:100vh; color:var(--ink); }
 
-    header { background:#22aa44; color:white; padding:10px 16px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
-    header h1 { font-size:15px; font-weight:bold; }
-    header p  { font-size:11px; opacity:.85; margin-top:2px; }
+    header { background:var(--green); color:white; padding:10px 16px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    header h1 { font-size:15px; font-weight:700; }
+    header p  { font-size:11px; opacity:.9; margin-top:2px; }
 
-    #status { padding:5px 14px; font-size:12px; text-align:center; flex-shrink:0; background:#e8f5e9; color:#2e7d32; border-bottom:1px solid #c8e6c9; }
+    #status { padding:5px 14px; font-size:12px; text-align:center; flex-shrink:0; background:#E3F3EA; color:var(--green-dark); border-bottom:1px solid #c9e6d4; }
 
     /* 種類ガイド */
     #guide {
-      background:#f8f9fa; border-bottom:1px solid #dee2e6;
+      background:#FBF6EC; border-bottom:1px solid #e6dcc8;
       flex-shrink:0; overflow:hidden;
       transition: max-height 0.3s ease;
       max-height:0;
@@ -26,45 +37,45 @@
     #guide.open { max-height:200px; }
     #guide-inner { padding:8px 12px; display:flex; flex-direction:column; gap:5px; }
     .type-row { display:flex; align-items:flex-start; gap:8px; font-size:11px; line-height:1.5; }
-    .type-badge { border-radius:3px; padding:1px 6px; font-size:10px; font-weight:bold; color:white; flex-shrink:0; margin-top:1px; }
-    .type-badge.chiiki  { background:#e53935; }
-    .type-badge.koiki   { background:#6a1b9a; }
-    .type-desc { color:#444; }
-    .type-desc b { color:#111; }
+    .type-badge { border-radius:3px; padding:1px 6px; font-size:10px; font-weight:700; color:white; flex-shrink:0; margin-top:1px; }
+    .type-badge.chiiki  { background:var(--orange); }
+    .type-badge.koiki   { background:var(--brown); }
+    .type-desc { color:#544a3d; }
+    .type-desc b { color:var(--ink); }
 
     #guide-btn {
-      width:100%; padding:5px 12px; background:#e8f5e9;
-      border:none; border-bottom:1px solid #c8e6c9;
-      font-size:11px; color:#22aa44; cursor:pointer;
+      width:100%; padding:5px 12px; background:#E3F3EA;
+      border:none; border-bottom:1px solid #c9e6d4;
+      font-size:11px; color:var(--green-dark); cursor:pointer;
       text-align:left; flex-shrink:0;
       display:flex; align-items:center; justify-content:space-between;
     }
-    #guide-btn:hover { background:#d0e8f8; }
+    #guide-btn:hover { background:#d5ecde; }
     #guide-arrow { transition:transform 0.3s; }
     #guide-arrow.open { transform:rotate(180deg); }
 
     #map { flex:1; z-index:0; }
 
-    #panel { height:190px; overflow-y:auto; background:#fff; border-top:2px solid #22aa44; flex-shrink:0; }
-    #panel-head { font-size:12px; padding:6px 12px; background:#e8f5e9; color:#22aa44; position:sticky; top:0; z-index:1; font-weight:bold; }
+    #panel { height:190px; overflow-y:auto; background:#fff; border-top:2px solid var(--green); flex-shrink:0; }
+    #panel-head { font-size:12px; padding:6px 12px; background:#E3F3EA; color:var(--green-dark); position:sticky; top:0; z-index:1; font-weight:700; }
 
-    .row { display:flex; align-items:center; padding:6px 12px; border-bottom:1px solid #f0f0f0; cursor:pointer; gap:8px; }
-    .row:hover { background:#f5f9ff; }
+    .row { display:flex; align-items:center; padding:6px 12px; border-bottom:1px solid #f3eee2; cursor:pointer; gap:8px; }
+    .row:hover { background:#FBF6EC; }
     .pin {
       width:26px; height:26px; border-radius:50%;
       color:white; display:flex; align-items:center; justify-content:center;
-      font-size:11px; font-weight:bold; flex-shrink:0;
+      font-size:11px; font-weight:700; flex-shrink:0;
     }
-    .pin.chiiki { background:#e53935; }
-    .pin.chiiki.near { background:#ff6f00; }
-    .pin.koiki  { background:#6a1b9a; }
+    .pin.chiiki { background:var(--orange); }
+    .pin.chiiki.near { background:var(--green); }
+    .pin.koiki  { background:var(--brown); }
     .info { flex:1; }
-    .info .name { font-size:13px; font-weight:bold; color:#1a1a1a; }
+    .info .name { font-size:13px; font-weight:700; color:var(--ink); }
     .info .sub  { font-size:10px; margin-top:1px; }
-    .info .sub.chiiki { color:#e53935; }
-    .info .sub.koiki  { color:#6a1b9a; }
-    .info .addr { font-size:11px; color:#888; }
-    .dist { font-size:12px; font-weight:bold; color:#22aa44; flex-shrink:0; min-width:40px; text-align:right; }
+    .info .sub.chiiki { color:var(--orange-dark); }
+    .info .sub.koiki  { color:var(--brown); }
+    .info .addr { font-size:11px; color:#8a7a64; }
+    .dist { font-size:12px; font-weight:700; color:var(--green-dark); flex-shrink:0; min-width:40px; text-align:right; }
 
     #loc-btn {
       position:fixed; bottom:200px; right:14px; z-index:999;
@@ -77,28 +88,28 @@
     /* 関連ページナビ */
     #related-nav {
       display:flex; gap:8px; padding:6px 12px;
-      background:#f1f8f2; border-bottom:1px solid #c8e6c9;
+      background:#F0F7F2; border-bottom:1px solid #c9e6d4;
       flex-shrink:0;
     }
     .rel-btn {
       flex:1; display:flex; align-items:center; justify-content:center; gap:5px;
-      border:1.5px solid #c8e6c9; border-radius:6px; padding:6px 8px;
-      font-size:12px; font-weight:bold; text-decoration:none; color:#22aa44; background:white;
+      border:1.5px solid #c9e6d4; border-radius:6px; padding:6px 8px;
+      font-size:12px; font-weight:700; text-decoration:none; color:var(--green-dark); background:white;
     }
-    .rel-btn:hover { background:#e8f5e9; border-color:#22aa44; }
+    .rel-btn:hover { background:#E3F3EA; border-color:var(--green); }
 
     /* ポップアップ */
-    .popup-badge  { border-radius:4px; padding:2px 8px; font-size:11px; font-weight:bold; color:white; display:inline-block; margin-bottom:5px; }
-    .popup-badge.chiiki { background:#e53935; }
-    .popup-badge.koiki  { background:#6a1b9a; }
-    .popup-title { font-size:14px; font-weight:bold; color:#1a1a1a; margin-bottom:4px; }
-    .popup-row   { font-size:12px; color:#333; margin:2px 0; line-height:1.5; }
+    .popup-badge  { border-radius:4px; padding:2px 8px; font-size:11px; font-weight:700; color:white; display:inline-block; margin-bottom:5px; }
+    .popup-badge.chiiki { background:var(--orange); }
+    .popup-badge.koiki  { background:var(--brown); }
+    .popup-title { font-size:14px; font-weight:700; color:var(--ink); margin-bottom:4px; }
+    .popup-row   { font-size:12px; color:#544a3d; margin:2px 0; line-height:1.5; }
     .popup-when  { font-size:11px; border-radius:4px; padding:6px 8px; margin:5px 0; line-height:1.6; }
-    .popup-when.chiiki { background:#ffeaea; color:#7f0000; border-left:3px solid #e53935; }
-    .popup-when.koiki  { background:#f3e5f5; color:#4a0072; border-left:3px solid #6a1b9a; }
-    .popup-dist  { font-size:12px; font-weight:bold; color:#e53935; margin-top:4px; }
-    .popup-btn   { display:inline-block; margin-top:7px; background:#22aa44 !important; color:white !important; padding:5px 12px; border-radius:5px; text-decoration:none !important; font-size:12px; font-weight:bold; }
-    .popup-btn:hover { background:#134a7a !important; }
+    .popup-when.chiiki { background:#FCEAD0; color:#7a4c0c; border-left:3px solid var(--orange); }
+    .popup-when.koiki  { background:#EFE6E0; color:#3a2c20; border-left:3px solid var(--brown); }
+    .popup-dist  { font-size:12px; font-weight:700; color:var(--orange-dark); margin-top:4px; }
+    .popup-btn   { display:inline-block; margin-top:7px; background:var(--green) !important; color:white !important; padding:5px 12px; border-radius:5px; text-decoration:none !important; font-size:12px; font-weight:700; }
+    .popup-btn:hover { background:var(--green-dark) !important; }
   </style>
 </head>
 <body>
@@ -126,14 +137,14 @@
   <div id="guide-inner">
     <div class="type-row">
       <span class="type-badge chiiki">地域防災拠点</span>
-      <span class="type-desc"><b>赤ピン（No.18〜27）</b> ― 家屋倒壊・損傷で自宅に戻れない場合の避難先。市内で震度5強以上で開設。食料・物資の受渡し場所にもなります。</span>
+      <span class="type-desc"><b>オレンジピン（No.18〜27）</b> ― 家屋倒壊・損傷で自宅に戻れない場合の避難先。市内で震度5強以上で開設。食料・物資の受渡し場所にもなります。</span>
     </div>
     <div class="type-row">
       <span class="type-badge koiki">広域避難場所</span>
-      <span class="type-desc"><b>紫ピン（川和高校）</b> ― 地震後に大規模な火災が延焼した場合、輻射熱・煙から身を守るための広い避難場所。長期滞在には地域防災拠点へ。</span>
+      <span class="type-desc"><b>茶ピン（川和高校）</b> ― 地震後に大規模な火災が延焼した場合、輻射熱・煙から身を守るための広い避難場所。長期滞在には地域防災拠点へ。</span>
     </div>
     <div class="type-row">
-      <span class="type-badge" style="background:#ff8f00;">いっとき避難場所</span>
+      <span class="type-badge" style="background:var(--orange-dark);">いっとき避難場所</span>
       <span class="type-desc">地震発生直後にまず集合する近くの公園・広場。安全確認のための一時的な場所。</span>
     </div>
   </div>
@@ -168,7 +179,7 @@ const WHEN = {
   koiki:  '地震後に大規模な火災が発生・延焼した場合<br>輻射熱・煙から生命・身体を守る広い避難場所<br>長期滞在には地域防災拠点（川和小学校等）へ',
 };
 
-const COLOR = { chiiki:'#e53935', koiki:'#6a1b9a' };
+const COLOR = { chiiki:'#EF9F27', koiki:'#5B4636' };
 
 const map = L.map('map',{zoomControl:true}).setView([35.535,139.560],13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
@@ -183,7 +194,7 @@ function calcDist(la1,ln1,la2,ln2){
 function distLabel(km){ return km<1?Math.round(km*1000)+'m':km.toFixed(1)+'km'; }
 
 function makeIcon(s, isNearest){
-  const color = isNearest ? '#ff6f00' : COLOR[s.type];
+  const color = isNearest ? '#3FA66B' : COLOR[s.type];
   const size  = isNearest ? 36 : 30;
   const label = s.type==='koiki' ? '広' : s.no;
   return L.divIcon({
@@ -234,8 +245,8 @@ function getLocation(){
     userLat=pos.coords.latitude; userLng=pos.coords.longitude;
     if(userDot)   map.removeLayer(userDot);
     if(userCircle)map.removeLayer(userCircle);
-    userDot=L.circleMarker([userLat,userLng],{radius:9,fillColor:'#2196F3',fillOpacity:1,color:'white',weight:3}).addTo(map).bindPopup('📍 現在地');
-    userCircle=L.circle([userLat,userLng],{radius:80,fillColor:'#2196F3',fillOpacity:.1,color:'#2196F3',weight:1}).addTo(map);
+    userDot=L.circleMarker([userLat,userLng],{radius:9,fillColor:'#4A90D9',fillOpacity:1,color:'white',weight:3}).addTo(map).bindPopup('📍 現在地');
+    userCircle=L.circle([userLat,userLng],{radius:80,fillColor:'#4A90D9',fillOpacity:.1,color:'#4A90D9',weight:1}).addTo(map);
     SPOTS.forEach(s=>{s.dist=calcDist(userLat,userLng,s.lat,s.lng);});
     SPOTS.sort((a,b)=>a.dist-b.dist);
     nearestNo=SPOTS[0].no;
