@@ -1,219 +1,141 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>会館予約</title>
-  <style>
-    :root{
-      --cream:#FBF3E6;
-      --orange:#EF9F27;
-      --orange-dark:#C97A12;
-      --green:#3FA66B;
-      --green-dark:#2C7C4F;
-      --blue:#4A90D9;
-      --blue-dark:#2E6CAE;
-      --brown:#5B4636;
-      --ink:#3a342c;
-    }
-    * { margin:0; padding:0; box-sizing:border-box; }
-    body { font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>会館予約｜さくら台自治会（デモ）</title>
+<link rel="stylesheet" href="style.css">
+<style>
+  /* 会館予約ページ専用 */
+  .cal-card{padding:20px 22px 24px;}
+  .cal-nav{display:flex;align-items:center;justify-content:space-between;padding:0 2px 14px;}
+  .cal-nav button{background:#FCEAD0;border:none;border-radius:10px;width:34px;height:34px;font-size:16px;color:var(--orange-dark);cursor:pointer;}
+  .cal-nav button:hover{background:#f6dcb4;}
+  .cal-nav .ym{font-size:15.5px;font-weight:700;color:var(--ink);}
+  .cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;}
+  .cal-dow{text-align:center;font-size:12px;color:var(--sub);font-weight:700;padding-bottom:4px;}
+  .cal-dow.sun{color:#d56a6a;}
+  .cal-dow.sat{color:var(--blue-dark);}
+  .cal-day{aspect-ratio:1/1;display:flex;align-items:center;justify-content:center;border-radius:10px;font-size:13.5px;cursor:pointer;color:var(--ink);background:var(--cream);user-select:none;}
+  .cal-day.blank{background:transparent;cursor:default;}
+  .cal-day.sun{color:#d56a6a;}
+  .cal-day.sat{color:var(--blue-dark);}
+  .cal-day.past{color:#c9bfae;background:#F1ECE0;cursor:not-allowed;}
+  .cal-day:not(.blank):not(.past):hover{background:#FCEAD0;}
+  .cal-day.selected{background:var(--orange);color:#fff;font-weight:800;}
 
-    header {
-      background:var(--green); color:white;
-      padding:24px 16px; text-align:center;
-    }
-    header h1 { font-size:22px; font-weight:800; }
-    header p  { font-size:13px; opacity:.92; margin-top:4px; }
+  .slot-list{display:flex;flex-direction:column;gap:10px;}
+  .slot{display:flex;align-items:center;justify-content:space-between;background:var(--cream);border:2px solid transparent;border-radius:12px;padding:14px 16px;cursor:pointer;}
+  .slot:hover{background:#f3e9d3;}
+  .slot .label{font-size:14.5px;font-weight:700;color:var(--ink);}
+  .slot .time{font-size:12.5px;color:var(--sub);margin-top:2px;}
+  .slot .mark{font-size:18px;color:#cfc6b4;}
+  .slot.selected{background:#FCEAD0;border-color:var(--orange);}
+  .slot.selected .mark{color:var(--orange-dark);}
+  .slot.selected .label{color:var(--orange-dark);}
 
-    .wrapper { max-width:860px; margin:0 auto; }
-    .content { padding:24px 20px; display:flex; flex-direction:column; gap:18px; }
+  .summary{background:var(--cream);border:2px dashed #e6d8bd;border-radius:12px;padding:14px 16px;font-size:13.5px;color:#6b5d49;line-height:1.8;margin-bottom:16px;}
+  .summary b{color:var(--ink);}
+  .summary .empty{color:#a39782;}
 
-    .card {
-      background:white; border-radius:16px;
-      box-shadow:0 4px 14px rgba(0,0,0,.06);
-      overflow:hidden;
-    }
-    .card-head {
-      background:var(--green); color:white;
-      padding:13px 18px; font-size:15px; font-weight:700;
-      display:flex; align-items:center; gap:8px;
-    }
-    .card-body { padding:16px 18px; }
-    .card-body p { font-size:14px; color:#544a3d; line-height:1.8; margin-bottom:10px; }
-    .card-body p:last-child { margin-bottom:0; }
+  .btn-confirm{display:block;width:100%;text-align:center;background:var(--orange);color:#fff;border:none;border-radius:24px;padding:15px;font-size:15.5px;font-weight:700;cursor:pointer;margin-bottom:16px;}
+  .btn-confirm:hover{background:var(--orange-dark);}
+  .btn-confirm:disabled{background:#e3d6bd;cursor:not-allowed;color:#a39782;}
 
-    /* カレンダー */
-    .cal-nav {
-      display:flex; align-items:center; justify-content:space-between;
-      padding:0 4px 14px;
-    }
-    .cal-nav button {
-      background:#E8F5ED; border:none; border-radius:10px;
-      width:36px; height:36px; font-size:16px; color:var(--green-dark);
-      cursor:pointer;
-    }
-    .cal-nav button:hover { background:#d3ecdd; }
-    .cal-nav .ym { font-size:16px; font-weight:700; color:var(--ink); }
-
-    .cal-grid {
-      display:grid; grid-template-columns:repeat(7,1fr); gap:6px;
-    }
-    .cal-dow {
-      text-align:center; font-size:12px; color:#9a8a72; font-weight:700; padding-bottom:4px;
-    }
-    .cal-dow.sun { color:#d56a6a; }
-    .cal-dow.sat { color:var(--blue-dark); }
-
-    .cal-day {
-      aspect-ratio:1/1; display:flex; align-items:center; justify-content:center;
-      border-radius:10px; font-size:14px; cursor:pointer; color:var(--ink);
-      background:#F7F2E8; user-select:none;
-    }
-    .cal-day.blank { background:transparent; cursor:default; }
-    .cal-day.sun { color:#d56a6a; }
-    .cal-day.sat { color:var(--blue-dark); }
-    .cal-day.past { color:#c9bfae; background:#F1ECE0; cursor:not-allowed; }
-    .cal-day:not(.blank):not(.past):hover { background:#d3ecdd; }
-    .cal-day.selected { background:var(--green); color:white; font-weight:800; }
-
-    /* 時間帯 */
-    .slot-list { display:flex; flex-direction:column; gap:10px; }
-    .slot {
-      display:flex; align-items:center; justify-content:space-between;
-      background:#F7F2E8; border:2px solid transparent; border-radius:12px;
-      padding:14px 16px; cursor:pointer;
-    }
-    .slot:hover { background:#EFE7D6; }
-    .slot .label { font-size:14.5px; font-weight:700; color:var(--ink); }
-    .slot .time  { font-size:12.5px; color:#8a7a64; margin-top:2px; }
-    .slot .mark  { font-size:18px; color:#cfc6b4; }
-    .slot.selected { background:#E8F5ED; border-color:var(--green); }
-    .slot.selected .mark { color:var(--green); }
-    .slot.selected .label { color:var(--green-dark); }
-
-    /* 確認エリア */
-    .summary {
-      background:#FBF3E6; border:2px dashed #e6d8bd; border-radius:12px;
-      padding:14px 16px; font-size:13.5px; color:#6b5d49; line-height:1.8;
-    }
-    .summary b { color:var(--ink); }
-    .summary .empty { color:#a39782; }
-
-    .btn-confirm {
-      display:block; width:100%; text-align:center;
-      background:var(--orange); color:white; border:none;
-      border-radius:14px; padding:16px; font-size:16px; font-weight:800;
-      box-shadow:0 4px 10px rgba(239,159,39,.35); cursor:pointer;
-    }
-    .btn-confirm:disabled { background:#e3d6bd; box-shadow:none; cursor:not-allowed; color:#a39782; }
-
-    .done-box {
-      display:none; background:#E8F5ED; border-radius:14px; padding:20px 18px;
-      text-align:center;
-    }
-    .done-box.show { display:block; }
-    .done-box .check { font-size:34px; margin-bottom:8px; }
-    .done-box .ttl { font-size:15.5px; font-weight:800; color:var(--green-dark); margin-bottom:6px; }
-    .done-box .detail { font-size:13.5px; color:#3a342c; line-height:1.8; }
-    .done-box .note { font-size:12px; color:#7a8a76; margin-top:10px; }
-
-    .note {
-      background:#EFE6E0; border-left:4px solid var(--brown);
-      border-radius:0 10px 10px 0; padding:12px 16px;
-      font-size:13px; color:var(--brown); line-height:1.8;
-    }
-    .note b { color:#3a2c20; }
-
-    .related { border-top:2px solid #efe3cf; padding:14px 20px; background:#F7EEDD; }
-    .related h3 { font-size:12px; color:#9a8a72; margin-bottom:8px; }
-    .related-links { display:flex; gap:10px; flex-wrap:wrap; }
-    .rel-btn {
-      flex:1; min-width:140px; display:flex; align-items:center; justify-content:center; gap:6px;
-      border:1.5px solid #e6d8bd; border-radius:10px; padding:10px 12px;
-      font-size:13px; font-weight:700; text-decoration:none; color:var(--ink); background:white;
-    }
-    .rel-btn:hover { background:#E8F5ED; border-color:var(--green); }
-
-    footer {
-      text-align:center; font-size:12px; color:#f4ead8;
-      padding:18px 20px; background:var(--brown);
-    }
-    footer a { color:#BBD8F2; }
-  </style>
+  .done-box{display:none;background:#E3F3EA;border-radius:14px;padding:20px 18px;text-align:center;margin-bottom:16px;}
+  .done-box.show{display:block;}
+  .done-box .check{font-size:32px;margin-bottom:8px;}
+  .done-box .ttl{font-size:15px;font-weight:700;color:var(--green-dark);margin-bottom:6px;}
+  .done-box .detail{font-size:13.5px;color:var(--ink);line-height:1.8;}
+  .done-box .note{font-size:12px;color:#7a8a76;margin-top:10px;}
+</style>
 </head>
 <body>
-
-<header>
-  <h1>🏛️ 会館予約</h1>
-  <p>自治会館の利用日時を選んでください</p>
+<div class="accent-bar"></div>
+<header class="site-header">
+  <a class="site-title" href="index.html">さくら台自治会</a>
+  <span class="demo-badge">DEMO PAGE</span>
 </header>
+<nav class="subnav">
+  <ul>
+    <li><a href="index.html">ホーム</a></li>
+<li><a href="about-joining.html">加入について</a></li>
+<li><a href="history.html">歴史</a></li>
+<li><a href="greeting.html">あいさつ</a></li>
+<li><a href="rules.html">会則</a></li>
+<li><a href="support-groups.html">支援団体</a></li>
+<li><a href="newsletter.html">広報誌</a></li>
+<li><a href="councilors.html">評議員</a></li>
+<li><a href="kaikan-yoyaku.html" class="active">会館予約</a></li>
+<li><a href="event-yotei.html">イベント予定表</a></li>
+  </ul>
+</nav>
+<div class="hero">
+  <h1>会館予約</h1>
+  <p>自治会館の利用日時を選んでください</p>
+</div>
+<main>
 
-<div class="wrapper"><div class="content">
+<div class="section-title">📅 利用日を選ぶ</div>
+<div class="card cal-card">
+  <div class="cal-nav">
+    <button id="prevMonth" aria-label="前の月">‹</button>
+    <span class="ym" id="ymLabel"></span>
+    <button id="nextMonth" aria-label="次の月">›</button>
+  </div>
+  <div class="cal-grid" id="dowRow"></div>
+  <div class="cal-grid" id="dayGrid" style="margin-top:6px;"></div>
+</div>
 
-  <div class="card">
-    <div class="card-head">📅 利用日を選ぶ</div>
-    <div class="card-body">
-      <div class="cal-nav">
-        <button id="prevMonth" aria-label="前の月">‹</button>
-        <span class="ym" id="ymLabel"></span>
-        <button id="nextMonth" aria-label="次の月">›</button>
-      </div>
-      <div class="cal-grid" id="dowRow"></div>
-      <div class="cal-grid" id="dayGrid" style="margin-top:6px;"></div>
+<div class="section-title">⏰ 利用時間帯を選ぶ</div>
+<div class="card">
+  <div class="slot-list">
+    <div class="slot" data-slot="午前" data-time="9:00〜13:00">
+      <div><div class="label">午前</div><div class="time">9:00 〜 13:00</div></div>
+      <div class="mark">○</div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="card-head">⏰ 利用時間帯を選ぶ</div>
-    <div class="card-body">
-      <div class="slot-list">
-        <div class="slot" data-slot="午前" data-time="9:00〜13:00">
-          <div><div class="label">午前</div><div class="time">9:00 〜 13:00</div></div>
-          <div class="mark">○</div>
-        </div>
-        <div class="slot" data-slot="午後" data-time="13:00〜17:00">
-          <div><div class="label">午後</div><div class="time">13:00 〜 17:00</div></div>
-          <div class="mark">○</div>
-        </div>
-        <div class="slot" data-slot="夜間" data-time="17:00〜21:00">
-          <div><div class="label">夜間</div><div class="time">17:00 〜 21:00</div></div>
-          <div class="mark">○</div>
-        </div>
-      </div>
+    <div class="slot" data-slot="午後" data-time="13:00〜17:00">
+      <div><div class="label">午後</div><div class="time">13:00 〜 17:00</div></div>
+      <div class="mark">○</div>
     </div>
-  </div>
-
-  <div class="summary" id="summaryBox">
-    <span class="empty">日付と時間帯を選ぶと、ここに予約内容が表示されます。</span>
-  </div>
-
-  <button class="btn-confirm" id="confirmBtn" disabled>この内容で予約する</button>
-
-  <div class="done-box" id="doneBox">
-    <div class="check">✅</div>
-    <div class="ttl">ご予約内容を確認しました</div>
-    <div class="detail" id="doneDetail"></div>
-    <div class="note">※現在は表示確認用のページです。実際の予約受付は準備中です。</div>
-  </div>
-
-  <div class="note">
-    ⚠️ <b>当日のご利用は、事前に役員へ直接ご連絡ください。</b><br>
-    予約の重複が確認された場合は、後ほど担当者よりご連絡いたします。
-  </div>
-
-</div></div>
-
-<div class="wrapper related">
-  <h3>🔗 関連ページ</h3>
-  <div class="related-links">
-    <a href="hazard-map.html?openExternalBrowser=1" class="rel-btn">🗺️ 防災マップ</a>
-    <a href="disaster-info.html?openExternalBrowser=1" class="rel-btn">🚨 災害情報の見方</a>
+    <div class="slot" data-slot="夜間" data-time="17:00〜21:00">
+      <div><div class="label">夜間</div><div class="time">17:00 〜 21:00</div></div>
+      <div class="mark">○</div>
+    </div>
   </div>
 </div>
 
-<footer class="wrapper">
-  〇〇自治会　会館予約のご案内
+<div class="summary" id="summaryBox">
+  <span class="empty">日付と時間帯を選ぶと、ここに予約内容が表示されます。</span>
+</div>
+
+<button class="btn-confirm" id="confirmBtn" disabled>この内容で予約する</button>
+
+<div class="done-box" id="doneBox">
+  <div class="check">✅</div>
+  <div class="ttl">ご予約内容を確認しました</div>
+  <div class="detail" id="doneDetail"></div>
+  <div class="note">※現在は表示確認用のページです。実際の予約受付は準備中です。</div>
+</div>
+
+<div class="qa">
+  <div class="q">当日キャンセルはできますか？</div>
+  <div class="a">できるだけ早めに班長または会長へご連絡ください。</div>
+</div>
+<div class="qa">
+  <div class="q">利用にあたって決まりはありますか？</div>
+  <div class="a">会館の利用ルールは会則ページをご確認ください。</div>
+</div>
+
+<div class="link-row">
+  <a class="btn ghost" href="rules.html">自治会会則</a>
+  <a class="btn ghost" href="support-groups.html">支援団体一覧</a>
+  <a class="btn ghost" href="index.html">ホームへ戻る</a>
+</div>
+
+</main>
+<footer>
+  &copy; 2026 さくら台自治会（本ページは架空の自治会によるデモ用サンプルです）
 </footer>
 
 <script>
@@ -230,8 +152,8 @@
   today.setHours(0,0,0,0);
   let viewYear = today.getFullYear();
   let viewMonth = today.getMonth(); // 0-11
-  let selectedDate = null; // Date object
-  let selectedSlot = null; // {slot,time}
+  let selectedDate = null;
+  let selectedSlot = null;
 
   const ymLabel = document.getElementById('ymLabel');
   const dayGrid = document.getElementById('dayGrid');
