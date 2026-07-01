@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>都筑区 防災拠点・避難場所マップ</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:'Hiragino Sans','Meiryo',sans-serif; display:flex; flex-direction:column; height:100vh; }
+
+    header { background:#22aa44; color:white; padding:10px 16px; display:flex; align-items:center; gap:10px; flex-shrink:0; }
+    header h1 { font-size:15px; font-weight:bold; }
+    header p  { font-size:11px; opacity:.85; margin-top:2px; }
+
+    #status { padding:5px 14px; font-size:12px; text-align:center; flex-shrink:0; background:#e8f5e9; color:#2e7d32; border-bottom:1px solid #c8e6c9; }
+
+    /* 種類ガイド */
+    #guide {
+      background:#f8f9fa; border-bottom:1px solid #dee2e6;
+      flex-shrink:0; overflow:hidden;
+      transition: max-height 0.3s ease;
+      max-height:0;
+    }
+    #guide.open { max-height:200px; }
+    #guide-inner { padding:8px 12px; display:flex; flex-direction:column; gap:5px; }
+    .type-row { display:flex; align-items:flex-start; gap:8px; font-size:11px; line-height:1.5; }
+    .type-badge { border-radius:3px; padding:1px 6px; font-size:10px; font-weight:bold; color:white; flex-shrink:0; margin-top:1px; }
+    .type-badge.chiiki  { background:#e53935; }
+    .type-badge.koiki   { background:#6a1b9a; }
+    .type-desc { color:#444; }
+    .type-desc b { color:#111; }
+
+    #guide-btn {
+      width:100%; padding:5px 12px; background:#e8f5e9;
+      border:none; border-bottom:1px solid #c8e6c9;
+      font-size:11px; color:#22aa44; cursor:pointer;
+      text-align:left; flex-shrink:0;
+      display:flex; align-items:center; justify-content:space-between;
+    }
+    #guide-btn:hover { background:#d0e8f8; }
+    #guide-arrow { transition:transform 0.3s; }
+    #guide-arrow.open { transform:rotate(180deg); }
+
+    #map { flex:1; z-index:0; }
+
+    #panel { height:190px; overflow-y:auto; background:#fff; border-top:2px solid #22aa44; flex-shrink:0; }
+    #panel-head { font-size:12px; padding:6px 12px; background:#e8f5e9; color:#22aa44; position:sticky; top:0; z-index:1; font-weight:bold; }
+
+    .row { display:flex; align-items:center; padding:6px 12px; border-bottom:1px solid #f0f0f0; cursor:pointer; gap:8px; }
+    .row:hover { background:#f5f9ff; }
+    .pin {
+      width:26px; height:26px; border-radius:50%;
+      color:white; display:flex; align-items:center; justify-content:center;
+      font-size:11px; font-weight:bold; flex-shrink:0;
+    }
+    .pin.chiiki { background:#e53935; }
+    .pin.chiiki.near { background:#ff6f00; }
+    .pin.koiki  { background:#6a1b9a; }
+    .info { flex:1; }
+    .info .name { font-size:13px; font-weight:bold; color:#1a1a1a; }
+    .info .sub  { font-size:10px; margin-top:1px; }
+    .info .sub.chiiki { color:#e53935; }
+    .info .sub.koiki  { color:#6a1b9a; }
+    .info .addr { font-size:11px; color:#888; }
+    .dist { font-size:12px; font-weight:bold; color:#22aa44; flex-shrink:0; min-width:40px; text-align:right; }
+
+    #loc-btn {
+      position:fixed; bottom:200px; right:14px; z-index:999;
+      width:44px; height:44px; border-radius:50%;
+      background:white; border:none; box-shadow:0 2px 8px rgba(0,0,0,.35);
+      cursor:pointer; font-size:20px; display:flex; align-items:center; justify-content:center;
+    }
+    #loc-btn:hover { background:#f0f0f0; }
+
+    /* 関連ページナビ */
+    #related-nav {
+      display:flex; gap:8px; padding:6px 12px;
+      background:#f1f8f2; border-bottom:1px solid #c8e6c9;
+      flex-shrink:0;
+    }
+    .rel-btn {
+      flex:1; display:flex; align-items:center; justify-content:center; gap:5px;
+      border:1.5px solid #c8e6c9; border-radius:6px; padding:6px 8px;
+      font-size:12px; font-weight:bold; text-decoration:none; color:#22aa44; background:white;
+    }
+    .rel-btn:hover { background:#e8f5e9; border-color:#22aa44; }
+
+    /* ポップアップ */
+    .popup-badge  { border-radius:4px; padding:2px 8px; font-size:11px; font-weight:bold; color:white; display:inline-block; margin-bottom:5px; }
+    .popup-badge.chiiki { background:#e53935; }
+    .popup-badge.koiki  { background:#6a1b9a; }
+    .popup-title { font-size:14px; font-weight:bold; color:#1a1a1a; margin-bottom:4px; }
+    .popup-row   { font-size:12px; color:#333; margin:2px 0; line-height:1.5; }
+    .popup-when  { font-size:11px; border-radius:4px; padding:6px 8px; margin:5px 0; line-height:1.6; }
+    .popup-when.chiiki { background:#ffeaea; color:#7f0000; border-left:3px solid #e53935; }
+    .popup-when.koiki  { background:#f3e5f5; color:#4a0072; border-left:3px solid #6a1b9a; }
+    .popup-dist  { font-size:12px; font-weight:bold; color:#e53935; margin-top:4px; }
+    .popup-btn   { display:inline-block; margin-top:7px; background:#22aa44 !important; color:white !important; padding:5px 12px; border-radius:5px; text-decoration:none !important; font-size:12px; font-weight:bold; }
+    .popup-btn:hover { background:#134a7a !important; }
+  </style>
+</head>
+<body>
+
+<header>
+  <div>🏫</div>
+  <div>
+    <h1>都筑区 防災拠点・避難場所マップ（No.18〜27）</h1>
+    <p>ピンをクリックで詳細 ／ 📍ボタンで現在地 ／ 下リストは近い順</p>
+  </div>
+</header>
+
+<div id="status">🔄 マップを読み込み中...</div>
+
+<div id="related-nav">
+  <a href="hazard-map.html?openExternalBrowser=1" class="rel-btn">🗺️ ハザードマップ</a>
+  <a href="disaster-info.html?openExternalBrowser=1" class="rel-btn">🚨 災害情報の見方</a>
+</div>
+
+<button id="guide-btn" onclick="toggleGuide()">
+  <span>📋 避難場所の種類と使い方を確認する</span>
+  <span id="guide-arrow">▼</span>
+</button>
+<div id="guide">
+  <div id="guide-inner">
+    <div class="type-row">
+      <span class="type-badge chiiki">地域防災拠点</span>
+      <span class="type-desc"><b>赤ピン（No.18〜27）</b> ― 家屋倒壊・損傷で自宅に戻れない場合の避難先。市内で震度5強以上で開設。食料・物資の受渡し場所にもなります。</span>
+    </div>
+    <div class="type-row">
+      <span class="type-badge koiki">広域避難場所</span>
+      <span class="type-desc"><b>紫ピン（さくら台高校）</b> ― 地震後に大規模な火災が延焼した場合、輻射熱・煙から身を守るための広い避難場所。長期滞在には地域防災拠点へ。</span>
+    </div>
+    <div class="type-row">
+      <span class="type-badge" style="background:#ff8f00;">いっとき避難場所</span>
+      <span class="type-desc">地震発生直後にまず集合する近くの公園・広場。安全確認のための一時的な場所。</span>
+    </div>
+  </div>
+</div>
+
+<div id="map"></div>
+<button id="loc-btn" title="現在地を表示">📍</button>
+<div id="panel">
+  <div id="panel-head">📋 拠点一覧（近い順）</div>
+  <div id="list"></div>
+</div>
+
+<script>
+// 地域防災拠点（type:'chiiki'）＋ 広域避難場所（type:'koiki'）
+const SPOTS = [
+  { no:18, name:'都田小学校',       addr:'都筑区東方町46',          area:'東方町・池辺町(一部)・川向町(一部)', tel:'045-941-2049', lat:35.5224367, lng:139.5715614, type:'chiiki' },
+  { no:19, name:'都田中学校',       addr:'都筑区池辺町4484',         area:'池辺町の一部',                       tel:'045-941-2045', lat:35.523128,  lng:139.5701885, type:'chiiki' },
+  { no:20, name:'都田西小学校',     addr:'都筑区佐江戸町643',        area:'池辺町(一部)・佐江戸町',             tel:'045-933-7652', lat:35.5215,    lng:139.563517,  type:'chiiki' },
+  { no:21, name:'さくら台小学校',   addr:'都筑区さくら台1463',       area:'さくら台',                           tel:'045-931-2272', lat:35.5299535, lng:139.5474711, type:'chiiki' },
+  { no:22, name:'川和東小学校',     addr:'都筑区富士見が丘21-2',     area:'富士見が丘・二の丸・高山・葛が谷・見花山', tel:'045-942-8130', lat:35.531477,  lng:139.558209,  type:'chiiki' },
+  { no:23, name:'川和中学校',       addr:'都筑区加賀原二丁目1-1',    area:'加賀原一・二丁目・川和台',           tel:'045-941-1361', lat:35.531143,  lng:139.556821,  type:'chiiki' },
+  { no:24, name:'荏田南小学校',     addr:'都筑区荏田南一丁目10-1',   area:'荏田南一〜三丁目・大丸',            tel:'045-942-1040', lat:35.544511,  lng:139.556454,  type:'chiiki' },
+  { no:25, name:'荏田小学校',       addr:'都筑区荏田南町2100',       area:'荏田南町・荏田東町・青葉区荏田町(一部)', tel:'045-911-0149', lat:35.557585,  lng:139.563594,  type:'chiiki' },
+  { no:26, name:'荏田東第一小学校', addr:'都筑区荏田東三丁目14-1',   area:'荏田東三丁目・荏田南四・五丁目',    tel:'045-941-7630', lat:35.5470088, lng:139.5623549, type:'chiiki' },
+  { no:27, name:'つづきの丘小学校', addr:'都筑区荏田東一丁目6-1',    area:'荏田東一・二・四丁目',              tel:'045-944-3461', lat:35.546195,  lng:139.565775,  type:'chiiki' },
+  // 広域避難場所
+  { no:'広', name:'さくら台高校',   addr:'都筑区さくら台2226-1',     area:'大規模火災時の広域避難場所（区内7か所のうちの1つ）', tel:'—', lat:35.537585, lng:139.5525318, type:'koiki' },
+];
+
+const WHEN = {
+  chiiki: '家屋倒壊・損傷で自宅に戻れない場合<br>市内で震度5強以上が観測されると開設<br>食料・物資の受渡し拠点にもなります',
+  koiki:  '地震後に大規模な火災が発生・延焼した場合<br>輻射熱・煙から生命・身体を守る広い避難場所<br>長期滞在には地域防災拠点（さくら台小学校等）へ',
+};
+
+const COLOR = { chiiki:'#e53935', koiki:'#6a1b9a' };
+
+const map = L.map('map',{zoomControl:true}).setView([35.535,139.560],13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{
+  attribution:'© <a href="https://www.openstreetmap.org/copyright" target="_blank">OpenStreetMap</a>', maxZoom:19
+}).addTo(map);
+
+function calcDist(la1,ln1,la2,ln2){
+  const R=6371,dLa=(la2-la1)*Math.PI/180,dLn=(ln2-ln1)*Math.PI/180;
+  const a=Math.sin(dLa/2)**2+Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*Math.sin(dLn/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+function distLabel(km){ return km<1?Math.round(km*1000)+'m':km.toFixed(1)+'km'; }
+
+function makeIcon(s, isNearest){
+  const color = isNearest ? '#ff6f00' : COLOR[s.type];
+  const size  = isNearest ? 36 : 30;
+  const label = s.type==='koiki' ? '広' : s.no;
+  return L.divIcon({
+    html:`<div style="width:${size}px;height:${size}px;background:${color};border:2.5px solid white;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 6px rgba(0,0,0,.4)"><span style="transform:rotate(45deg);color:white;font-weight:bold;font-size:${isNearest?13:11}px">${label}</span></div>`,
+    className:'', iconSize:[size,size], iconAnchor:[size/2,size], popupAnchor:[0,-(size+4)]
+  });
+}
+
+let userLat=null,userLng=null,userCircle=null,userDot=null,nearestNo=null;
+let markerMap={};
+
+function buildPopup(s){
+  const dist = userLat!==null ? `<div class="popup-dist">📍 現在地から ${distLabel(calcDist(userLat,userLng,s.lat,s.lng))}</div>` : '';
+  const mapsUrl = userLat!==null
+    ? `https://www.google.com/maps/dir/?api=1&origin=${userLat},${userLng}&destination=${s.lat},${s.lng}&travelmode=walking`
+    : `https://www.google.com/maps/dir/?api=1&destination=${s.lat},${s.lng}&travelmode=walking`;
+  const typeLabel = s.type==='chiiki' ? '地域防災拠点（指定避難所）' : '広域避難場所';
+  const noLabel   = s.type==='chiiki' ? `No.${s.no}` : '広域';
+  return `
+    <span class="popup-badge ${s.type}">${typeLabel}</span>
+    <div class="popup-title">${s.type==='chiiki'?'🏫':'🏟️'} ${s.name}（${noLabel}）</div>
+    <div class="popup-row">📌 ${s.addr}</div>
+    <div class="popup-row">👥 ${s.area}</div>
+    ${s.tel!=='—'?`<div class="popup-row">📞 <b>${s.tel}</b></div>`:''}
+    <div class="popup-when ${s.type}"><b>✅ こんな時に使う</b><br>${WHEN[s.type]}</div>
+    ${dist}
+    <a class="popup-btn" href="${mapsUrl}" target="_blank">🗺 ルート案内を開く</a>
+  `;
+}
+
+function addAllMarkers(){
+  Object.values(markerMap).forEach(m=>map.removeLayer(m));
+  markerMap={};
+  SPOTS.forEach(s=>{
+    const isNearest = s.no===nearestNo;
+    const m = L.marker([s.lat,s.lng],{icon:makeIcon(s,isNearest)}).addTo(map).bindPopup(buildPopup(s),{maxWidth:290});
+    markerMap[s.no]=m;
+  });
+}
+addAllMarkers();
+map.fitBounds(SPOTS.map(s=>[s.lat,s.lng]),{padding:[40,40]});
+document.getElementById('status').textContent='✅ マップ読み込み完了 ― 📍ボタンで現在地を取得';
+
+function getLocation(){
+  if(!navigator.geolocation){ document.getElementById('status').textContent='⚠️ 現在地取得に非対応'; return; }
+  document.getElementById('status').textContent='🔄 現在地を取得中...';
+  navigator.geolocation.getCurrentPosition(pos=>{
+    userLat=pos.coords.latitude; userLng=pos.coords.longitude;
+    if(userDot)   map.removeLayer(userDot);
+    if(userCircle)map.removeLayer(userCircle);
+    userDot=L.circleMarker([userLat,userLng],{radius:9,fillColor:'#2196F3',fillOpacity:1,color:'white',weight:3}).addTo(map).bindPopup('📍 現在地');
+    userCircle=L.circle([userLat,userLng],{radius:80,fillColor:'#2196F3',fillOpacity:.1,color:'#2196F3',weight:1}).addTo(map);
+    SPOTS.forEach(s=>{s.dist=calcDist(userLat,userLng,s.lat,s.lng);});
+    SPOTS.sort((a,b)=>a.dist-b.dist);
+    nearestNo=SPOTS[0].no;
+    addAllMarkers();
+    map.setView([userLat,userLng],14);
+    document.getElementById('status').textContent=`⭐ 最寄りの拠点：${SPOTS[0].name}（${distLabel(SPOTS[0].dist)}）`;
+    renderList();
+    setTimeout(()=>{ markerMap[nearestNo]?.openPopup(); },400);
+  },()=>{
+    document.getElementById('status').textContent='⚠️ 現在地の取得が許可されませんでした。ブラウザの位置情報を許可してください。';
+  },{enableHighAccuracy:true,timeout:10000});
+}
+
+function renderList(){
+  document.getElementById('list').innerHTML=SPOTS.map(s=>`
+    <div class="row" onclick="focusSpot('${s.no}')">
+      <div class="pin ${s.type}${s.no===nearestNo?' near':''}">${s.no==='広'?'広':s.no}</div>
+      <div class="info">
+        <div class="name">${s.no===nearestNo?'⭐ ':''}${s.name}</div>
+        <div class="sub ${s.type}">${s.type==='chiiki'?'地域防災拠点':'広域避難場所'}</div>
+        <div class="addr">${s.addr}</div>
+      </div>
+      ${s.dist!==undefined?`<div class="dist">${distLabel(s.dist)}</div>`:''}
+    </div>
+  `).join('');
+}
+renderList();
+
+window.focusSpot=function(no){
+  const s=SPOTS.find(x=>String(x.no)===String(no));
+  if(!s)return;
+  map.setView([s.lat,s.lng],16);
+  markerMap[s.no]?.openPopup();
+};
+
+document.getElementById('loc-btn').addEventListener('click',getLocation);
+getLocation();
+
+function toggleGuide(){
+  const g=document.getElementById('guide');
+  const a=document.getElementById('guide-arrow');
+  const open=g.classList.toggle('open');
+  a.classList.toggle('open',open);
+}
+</script>
+</body>
+</html>

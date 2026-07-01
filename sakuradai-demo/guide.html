@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>使い方ガイド</title>
+  <style>
+    :root{
+      --cream:#FBF3E6;
+      --orange:#EF9F27;
+      --orange-dark:#C97A12;
+      --green:#3FA66B;
+      --green-dark:#2C7C4F;
+      --blue:#4A90D9;
+      --blue-dark:#2E6CAE;
+      --brown:#5B4636;
+      --ink:#3a342c;
+    }
+    * { margin:0; padding:0; box-sizing:border-box; }
+    body { font-family:"Hiragino Kaku Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif; background:var(--cream); color:var(--ink); min-height:100vh; }
+    header {
+      background:var(--orange); color:white;
+      padding:24px 16px; text-align:center;
+    }
+    header h1 { font-size:22px; font-weight:800; }
+    header p  { font-size:13px; opacity:.92; margin-top:4px; }
+    .wrapper { max-width:860px; margin:0 auto; }
+    .content { padding:24px 16px; display:flex; flex-direction:column; gap:18px; }
+    /* カード */
+    .card { background:white; border-radius:16px; box-shadow:0 4px 14px rgba(0,0,0,.06); overflow:hidden; }
+    .card-head {
+      padding:13px 18px; font-size:15px; font-weight:700;
+      display:flex; align-items:center; gap:8px; color:white;
+    }
+    .card-head.orange { background:var(--orange); }
+    .card-head.blue   { background:var(--blue); }
+    .card-head.green  { background:var(--green); }
+    .card-head.brown  { background:var(--brown); }
+    .card-body { padding:16px 18px; }
+    /* フロー */
+    .flow { display:flex; flex-direction:column; gap:0; }
+    .flow-step {
+      display:flex; gap:14px; align-items:flex-start;
+      padding:12px 0; border-bottom:1px solid #f1ece0;
+    }
+    .flow-step:last-child { border-bottom:none; }
+    .step-num {
+      width:32px; height:32px; border-radius:50%;
+      background:var(--orange); color:white;
+      display:flex; align-items:center; justify-content:center;
+      font-size:14px; font-weight:700; flex-shrink:0; margin-top:2px;
+    }
+    .step-body { flex:1; }
+    .step-title { font-size:14px; font-weight:700; color:var(--ink); margin-bottom:3px; }
+    .step-desc  { font-size:13px; color:#6b5f4e; line-height:1.7; }
+    .step-tag {
+      display:inline-block; background:#FCEAD0; color:var(--orange-dark);
+      border-radius:4px; padding:1px 8px; font-size:11px; font-weight:700;
+      margin-top:4px;
+    }
+    /* リッチメニューボタン一覧 */
+    .menu-grid {
+      display:grid; grid-template-columns:1fr 1fr; gap:10px;
+    }
+    @media(max-width:480px){ .menu-grid { grid-template-columns:1fr; } }
+    .menu-item {
+      border-radius:12px; padding:12px 14px;
+      display:flex; gap:10px; align-items:flex-start;
+      text-decoration:none;
+    }
+    .menu-item .icon { font-size:24px; flex-shrink:0; }
+    .menu-item .body {}
+    .menu-item .name { font-size:14px; font-weight:700; margin-bottom:3px; }
+    .menu-item .desc { font-size:12px; line-height:1.6; }
+    .mi-green  { background:#E3F3EA; color:#1f5e3e; }
+    .mi-green  .name { color:var(--green-dark); }
+    .mi-blue   { background:#E6F1FB; color:#1f4d80; }
+    .mi-blue   .name { color:var(--blue-dark); }
+    .mi-brown  { background:#EFE6E0; color:#4a382c; }
+    .mi-brown  .name { color:var(--brown); }
+    .mi-orange { background:#FCEAD0; color:#8a5a16; }
+    .mi-orange .name { color:var(--orange-dark); }
+    .mi-teal   { background:#DCEEF0; color:#1d5b63; }
+    .mi-teal   .name { color:#1d5b63; }
+    .mi-purple { background:#FCEAD0; color:var(--orange-dark); }
+    .mi-purple .name { color:var(--orange-dark); }
+    /* 安否確認ボタン */
+    .answer-grid { display:grid; grid-template-columns:1fr 1fr; gap:8px; }
+    .answer-btn {
+      border-radius:10px; padding:10px 12px; text-align:center;
+      font-size:13px; font-weight:700;
+    }
+    .answer-btn.green  { background:#E3F3EA; color:var(--green-dark); border:1.5px solid #B7DDC6; }
+    .answer-btn.red    { background:#EFE6E0; color:var(--brown); border:1.5px solid #D3C2B6; }
+    .answer-btn.blue   { background:#E6F1FB; color:var(--blue-dark); border:1.5px solid #B7D3EF; }
+    .answer-btn.indigo { background:#FCEAD0; color:var(--orange-dark); border:1.5px solid #F0CC8E; }
+    /* SOS特別説明 */
+    .sos-flow {
+      background:#FCEAD0; border-radius:10px; padding:12px 14px;
+      border-left:3px solid var(--orange); margin-top:8px;
+    }
+    .sos-flow .sos-title { font-size:13px; font-weight:700; color:var(--orange-dark); margin-bottom:6px; }
+    .sos-step { font-size:12px; color:#6b5f4e; line-height:2; }
+    /* 注意箱 */
+    .note {
+      background:#EFE6E0; border-left:4px solid var(--brown);
+      border-radius:0 10px 10px 0; padding:12px 16px;
+      font-size:13px; color:var(--brown); line-height:1.8;
+    }
+    .note b { color:#3a2c20; }
+    /* 関連ページ */
+    .related { border-top:2px solid #efe3cf; padding:14px 16px; background:#F7EEDD; }
+    .related h3 { font-size:12px; color:#9a8a72; margin-bottom:8px; }
+    .related-links { display:flex; gap:10px; flex-wrap:wrap; }
+    .rel-btn {
+      flex:1; min-width:130px; display:flex; align-items:center; justify-content:center; gap:6px;
+      border:1.5px solid #e6d8bd; border-radius:10px; padding:10px 12px;
+      font-size:13px; font-weight:700; text-decoration:none; color:var(--ink); background:white;
+    }
+    .rel-btn:hover { background:#FCEAD0; border-color:var(--orange); }
+    footer {
+      text-align:center; font-size:12px; color:#f4ead8;
+      padding:18px 16px; background:var(--brown);
+    }
+  </style>
+</head>
+<body>
+<header>
+  <h1>❓ 使い方ガイド</h1>
+  <p>さくら台 自治会 LINE安否確認システム</p>
+</header>
+<div class="wrapper"><div class="content">
+  <!-- このシステムについて -->
+  <div class="card">
+    <div class="card-head orange">📋 このシステムについて</div>
+    <div class="card-body">
+      <div class="flow">
+        <div class="flow-step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <div class="step-title">災害を自動検知</div>
+            <div class="step-desc">地震（震度5弱以上）や大雨（警戒レベル4以上）を気象庁の情報から1分ごとに自動監視します。</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <div class="step-title">LINEにボタン付きメッセージが届く</div>
+            <div class="step-desc">災害を検知すると、登録済みの全会員のLINEに安否確認メッセージが自動送信されます。</div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <div class="step-title">ボタンをワンタップするだけ</div>
+            <div class="step-desc">4つのボタンから状況を選んでタップするだけで安否報告が完了します。文字を打つ必要はありません。</div>
+            <div class="answer-grid" style="margin-top:8px;">
+              <div class="answer-btn green">✅ 無事です</div>
+              <div class="answer-btn red">🙋 手助けが必要</div>
+              <div class="answer-btn blue">🏠 自宅待機中</div>
+              <div class="answer-btn indigo">🌊 浸水あり</div>
+            </div>
+          </div>
+        </div>
+        <div class="flow-step">
+          <div class="step-num">4</div>
+          <div class="step-body">
+            <div class="step-title">自治会が状況を一括把握</div>
+            <div class="step-desc">回答内容はスプレッドシートに自動記録され、自治会の担当者が全員の安否を一覧で確認できます。</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- 救助要請の特別説明 -->
+  <div class="card">
+    <div class="card-head brown">🙋 「手助けが必要」を選んだ場合</div>
+    <div class="card-body">
+      <div class="step-desc" style="margin-bottom:10px;">「🙋 手助けが必要」をタップすると、追加で<b>現在地の共有</b>をお願いします。</div>
+      <div class="sos-flow">
+        <div class="sos-title">📍 位置情報を送る手順</div>
+        <div class="sos-step">
+          ① 「🙋 手助けが必要」をタップ<br>
+          ② LINEから「現在地を送ってください」と返信が届く<br>
+          ③ LINEの📎（添付）→「位置情報」をタップ<br>
+          ④ 現在地を確認して「送信」<br>
+          ⑤ 自治会の管理者グループに名前・住所・地図リンクが自動送信される
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- メンバー登録について -->
+  <div class="card">
+    <div class="card-head green">📝 メンバー登録について</div>
+    <div class="card-body">
+      <div class="step-desc" style="margin-bottom:10px;">このLINEを友だち追加したら、<b>必ずメンバー登録を行ってください。</b><br>未登録のままだと、災害時に安否確認メッセージが届かない場合があります。</div>
+      <div class="flow">
+        <div class="flow-step" style="padding:8px 0;">
+          <div class="step-num" style="background:var(--green); width:26px; height:26px; font-size:12px;">1</div>
+          <div class="step-body"><div class="step-desc">下のメニュー「📝 メンバー登録・確認」をタップ</div></div>
+        </div>
+        <div class="flow-step" style="padding:8px 0;">
+          <div class="step-num" style="background:var(--green); width:26px; height:26px; font-size:12px;">2</div>
+          <div class="step-body"><div class="step-desc">お名前（本名）と班番号を入力</div></div>
+        </div>
+        <div class="flow-step" style="padding:8px 0; border:none;">
+          <div class="step-num" style="background:var(--green); width:26px; height:26px; font-size:12px;">3</div>
+          <div class="step-body"><div class="step-desc">「登録完了」のメッセージが届いたら完了</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- リッチメニューの使い方 -->
+  <div class="card">
+    <div class="card-head blue">📱 メニューボタンの使い方</div>
+    <div class="card-body">
+      <div class="menu-grid">
+        <a href="javascript:void(0)" class="menu-item mi-green">
+          <div class="icon">📝</div>
+          <div class="body">
+            <div class="name">メンバー登録・確認</div>
+            <div class="desc">お名前と班番号を登録・変更する</div>
+          </div>
+        </a>
+        <a href="hazard-map.html?openExternalBrowser=1" class="menu-item mi-blue">
+          <div class="icon">🗺️</div>
+          <div class="body">
+            <div class="name">ハザードマップ</div>
+            <div class="desc">自宅周辺の浸水・土砂リスクを事前確認</div>
+          </div>
+        </a>
+        <a href="javascript:void(0)" class="menu-item mi-brown">
+          <div class="icon">🆘</div>
+          <div class="body">
+            <div class="name">手助け要請</div>
+            <div class="desc">今すぐ手助けが必要な時にタップ</div>
+          </div>
+        </a>
+        <a href="disaster-info.html?openExternalBrowser=1" class="menu-item mi-orange">
+          <div class="icon">📢</div>
+          <div class="body">
+            <div class="name">災害情報を見る</div>
+            <div class="desc">都筑区の警報・避難情報を確認</div>
+          </div>
+        </a>
+        <a href="shelter-map.html?openExternalBrowser=1" class="menu-item mi-teal">
+          <div class="icon">📍</div>
+          <div class="body">
+            <div class="name">避難場所マップ</div>
+            <div class="desc">近くの防災拠点・避難場所を確認</div>
+          </div>
+        </a>
+        <a href="guide.html" class="menu-item mi-purple">
+          <div class="icon">❓</div>
+          <div class="body">
+            <div class="name">使い方ガイド</div>
+            <div class="desc">このページ</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  <!-- 注意 -->
+  <div class="note">
+    ⚠️ <b>安否確認メッセージが届いたら、できるだけ早くボタンをタップしてください。</b><br>
+    回答がないと、自治会担当者が個別に連絡を取る場合があります。
+  </div>
+</div></div>
+<div class="wrapper related">
+  <h3>🔗 関連ページ</h3>
+  <div class="related-links">
+    <a href="shelter-map.html?openExternalBrowser=1" class="rel-btn">🏫 避難場所マップ</a>
+    <a href="hazard-map.html?openExternalBrowser=1" class="rel-btn">🗺️ ハザードマップ</a>
+    <a href="disaster-info.html?openExternalBrowser=1" class="rel-btn">🚨 災害情報の見方</a>
+  </div>
+</div>
+<footer class="wrapper">
+  さくら台 自治会 LINE安否確認システム
+</footer>
+</body>
+</html>
